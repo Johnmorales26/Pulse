@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/theme/colors.dart';
 import 'package:pulse/core/theme/typography.dart';
 import 'package:pulse/features/map/presentation/map_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await initDependencies();
+
+  await dotenv.load(fileName: 'assets/.env');
+
+  String accessToken = dotenv.get('ACCESS_TOKEN');
+  MapboxOptions.setAccessToken(accessToken);
+
   runApp(const MyApp());
 }
 
@@ -19,7 +31,7 @@ class MyApp extends StatelessWidget {
       title: 'Pulse',
       debugShowCheckedModeBanner: false,
       theme: theme.dark(),
-      home: const MapScreen(),
+      home: MapScreen(),
     );
   }
 }
