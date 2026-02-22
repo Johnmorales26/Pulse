@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pulse/presentation/home/home_screen.dart';
-import 'package:pulse/presentation/theme/colors.dart';
-import 'package:pulse/presentation/theme/typography.dart';
+import 'package:pulse/core/theme/colors.dart';
+import 'package:pulse/core/theme/typography.dart';
+import 'package:pulse/features/map/presentation/map_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'Pulse',
       debugShowCheckedModeBanner: false,
       theme: theme.dark(),
-      home: const HomeScreen(),
+      home: const MapScreen(),
     );
   }
 }
