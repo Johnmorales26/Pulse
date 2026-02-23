@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:pulse/core/di/injection.dart';
+import 'package:pulse/core/navigation/router.dart';
 import 'package:pulse/core/theme/colors.dart';
 import 'package:pulse/core/theme/typography.dart';
 import 'package:pulse/features/map/presentation/map_screen.dart';
@@ -33,11 +34,11 @@ class MyApp extends StatelessWidget {
     TextTheme textTheme = createTextTheme(context, "Poppins", "Space Grotesk");
     MaterialTheme theme = MaterialTheme(textTheme);
 
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Pulse',
       debugShowCheckedModeBanner: false,
       theme: theme.dark(),
-      home: const MapScreen(),
+      routerConfig: AppRouter.router,
     );
   }
 }

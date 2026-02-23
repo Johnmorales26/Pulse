@@ -11,17 +11,42 @@ class MapBloc extends Bloc<MapIntent, MapState> {
 
   MapBloc(this.getMapLocationsUseCase, this.logger) : super(MapInitial()) {
     on<FetchMapLocationsIntent>(_onFetchLocations);
+    on<SelectMapLocationIntent>(_onSelectLocation);
+    on<DeselectMapLocationIntent>(_onDeselectLocation);
   }
 
-  Future<void> _onFetchLocations(FetchMapLocationsIntent intent, Emitter<MapState> emit) async {
+  Future<void> _onFetchLocations(
+    FetchMapLocationsIntent intent,
+    Emitter<MapState> emit,
+  ) async {
     emit(MapLoading());
     try {
       final locations = await getMapLocationsUseCase();
 
-      emit(MapSuccess(locations));
+      emit(MapSuccess(locations: locations));
     } catch (e) {
       logger.d('Log de Manager -> Error crítico al consultar Firebase: $e');
       emit(MapError(e.toString()));
+    }
+  }
+
+  void _onSelectLocation(
+    SelectMapLocationIntent intent,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapSuccess) {
+      final currentState = state as MapSuccess;
+      emit(currentState.copyWith(selectedLocation: intent.location));
+    }
+  }
+
+  void _onDeselectLocation(
+    DeselectMapLocationIntent intent,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapSuccess) {
+      final currentState = state as MapSuccess;
+      emit(currentState.copyWith(clearSelection: true));
     }
   }
 }
