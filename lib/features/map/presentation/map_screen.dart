@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:lordicon/lordicon.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:pulse/core/di/injection.dart';
+import 'package:pulse/features/map/domain/model/place_icon.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
@@ -59,27 +62,31 @@ class MapWidgetLoading extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            IconViewer(controller: controller, width: 128, height: 128),
-            Text('Setting Up Map', style: Theme.of(context).textTheme.headlineMedium)
-          ]
-      )
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          IconViewer(controller: controller, width: 128, height: 128),
+          Text(
+            'Setting Up Map',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+        ],
+      ),
     );
   }
 }
 
 class MapWidgetSuccess extends StatelessWidget {
+  final Logger logger = sl<Logger>();
   final List<PlaceLocation> locations;
   MapboxMap? _mapboxMap;
+
+  MapWidgetSuccess({super.key, required this.locations});
 
   final CameraOptions _initialCameraOptions = CameraOptions(
     center: Point(coordinates: Position(-99.133209, 19.432608)),
     zoom: 13.0,
   );
-
-  MapWidgetSuccess({super.key, required this.locations});
 
   void _onMapCreated(MapboxMap mapboxMap) async {
     _mapboxMap = mapboxMap;
@@ -103,6 +110,32 @@ class MapWidgetSuccess extends StatelessWidget {
         marginBottom: 16,
       ),
     );
+
+    await _addMarkersToMap(mapboxMap);
+  }
+
+  Future<void> _addMarkersToMap(MapboxMap mapboxMap) async {
+    final pointAnnotationManager = await mapboxMap.annotations
+        .createPointAnnotationManager();
+
+    for (var loc in locations) {
+      try {
+        final place = PlaceIcon.fromId(loc.type);
+
+        final ByteData bytes = await rootBundle.load(place.asset);
+        final Uint8List imageBytes = bytes.buffer.asUint8List();
+
+        final pointAnnotationOptions = PointAnnotationOptions(
+          geometry: Point(coordinates: Position(loc.longitude, loc.latitude)),
+          image: imageBytes,
+          iconSize: 0.1,
+        );
+
+        await pointAnnotationManager.create(pointAnnotationOptions);
+      } catch (e) {
+        logger.e('Log of Manager -> Error to add pin of ${loc.name}: $e');
+      }
+    }
   }
 
   @override
