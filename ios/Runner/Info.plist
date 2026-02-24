@@ -7,6 +7,10 @@
     <key>NSAllowsArbitraryLoads</key>
     <true/>
 </dict>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Pulse necesita tu ubicación para mostrar lugares cercanos a ti.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Pulse necesita tu ubicación para mostrarte lugares cercanos.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pulse/core/navigation/router_names.dart';
 import 'package:pulse/core/navigation/transition.dart';

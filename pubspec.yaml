@@ -50,6 +50,8 @@ dependencies:
   logger: ^2.6.2
   flutter_dotenv: ^6.0.0
   lordicon: ^1.0.3
+  geolocator: ^14.0.2
+  toastification: ^3.0.3
 
 dev_dependencies:
   flutter_test:

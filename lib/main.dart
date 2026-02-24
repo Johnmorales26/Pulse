@@ -6,7 +6,6 @@ import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router.dart';
 import 'package:pulse/core/theme/colors.dart';
 import 'package:pulse/core/theme/typography.dart';
-import 'package:pulse/features/map/presentation/map_screen.dart';
 import 'package:pulse/firebase_options.dart';
 
 void main() async {

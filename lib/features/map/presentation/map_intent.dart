@@ -1,6 +1,7 @@
 import '../domain/model/place_location.dart';
 
 abstract class MapIntent {}
+class FetchUserLocationIntent extends MapIntent {}
 class FetchMapLocationsIntent extends MapIntent {}
 class SelectMapLocationIntent extends MapIntent {
   final PlaceLocation location;

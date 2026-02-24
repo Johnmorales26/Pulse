@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logger/logger.dart';
-import 'package:lordicon/lordicon.dart';
-import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:pulse/core/di/injection.dart';
-import 'package:pulse/features/map/domain/model/place_icon.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
 import 'package:pulse/features/map/presentation/widgets/location_card.dart';
+import 'package:pulse/features/map/presentation/widgets/map_widget_loading.dart';
+import 'package:pulse/features/map/presentation/widgets/map_widget_success.dart';
 
-import '../domain/model/place_location.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -22,200 +18,89 @@ class MapScreen extends StatelessWidget {
     return Scaffold(
       body: BlocProvider(
         create: (context) => sl<MapBloc>()..add(FetchMapLocationsIntent()),
-        child: Stack(
-          children: [
-            BlocBuilder<MapBloc, MapState>(
-              buildWhen: (previous, current) {
-                if (previous is MapSuccess && current is MapSuccess) {
-                  return previous.locations != current.locations;
-                }
-                return true;
-              },
-              builder: (context, state) {
-                if (state is MapInitial || state is MapLoading) {
-                  return const MapWidgetLoading();
-                } else if (state is MapError) {
-                  return Center(child: Text('Error: ${state.error}'));
-                } else if (state is MapSuccess) {
-                  final locations = state.locations;
+        child: Builder(
+          builder: (innerContext) {
+            return Stack(
+              children: [
+                BlocBuilder<MapBloc, MapState>(
+                  buildWhen: (previous, current) {
+                    if (previous is MapSuccess && current is MapSuccess) {
+                      return previous.locations != current.locations;
+                    }
+                    return true;
+                  },
+                  builder: (context, state) {
+                    if (state is MapInitial || state is MapLoading) {
+                      return const MapWidgetLoading();
+                    } else if (state is MapError) {
+                      return Center(child: Text('Error: ${state.error}'));
+                    } else if (state is MapSuccess) {
+                      final locations = state.locations;
+                      final userLocation = state.userLocation;
 
-                  return MapWidgetSuccess(
-                    locations: locations,
-                    onLocationSelected: (location) {
-                      context.read<MapBloc>().add(
-                        SelectMapLocationIntent(location),
+                      return MapWidgetSuccess(
+                        userLocation: userLocation,
+                        locations: locations,
+                        onLocationSelected: (location) {
+                          innerContext.read<MapBloc>().add(
+                            SelectMapLocationIntent(location),
+                          );
+                        },
                       );
+                    }
+
+                    return const SizedBox.shrink();
+                  },
+                ),
+
+                Align(
+                  alignment: .centerEnd,
+                  child: Padding(
+                    padding: const EdgeInsets.only(right: 8.0),
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        innerContext.read<MapBloc>().add(FetchUserLocationIntent());
+                      },
+                      child: Icon(Icons.my_location_outlined),
+                    ),
+                  ),
+                ),
+
+                Align(
+                  alignment: .bottomCenter,
+                  child: BlocBuilder<MapBloc, MapState>(
+                    builder: (context, state) {
+                      if (state is MapSuccess &&
+                          state.selectedLocation != null) {
+                        return LocationCard(
+                          location: state.selectedLocation!,
+                          onClose: () {
+                            context.read<MapBloc>().add(
+                              DeselectMapLocationIntent(),
+                            );
+                          },
+                          onTap: (location) {
+                            context.pushNamed(
+                              'placeDetail',
+                              pathParameters: {'id': location.id},
+                              extra: location,
+                            );
+                          },
+                        );
+                      }
+                      return const SizedBox.shrink();
                     },
-                  );
-                }
-
-                return const SizedBox.shrink();
-              },
-            ),
-
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: BlocBuilder<MapBloc, MapState>(
-                builder: (context, state) {
-                  if (state is MapSuccess && state.selectedLocation != null) {
-                    return LocationCard(
-                      location: state.selectedLocation!,
-                      onClose: () {
-                        context.read<MapBloc>().add(
-                          DeselectMapLocationIntent(),
-                        );
-                      },
-                      onTap: (location) {
-                        context.pushNamed(
-                          'placeDetail',
-                          pathParameters: {'id': location.id},
-                          extra: location
-                        );
-                      },
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-            ),
-          ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class MapWidgetLoading extends StatelessWidget {
-  const MapWidgetLoading({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    final controller = IconController.assets(
-      'assets/animations/animation_pin.json',
-    );
 
-    controller.addStatusListener((status) {
-      if (status == ControllerStatus.ready) {
-        controller.playFromBeginning();
-      }
 
-      if (status == ControllerStatus.completed) {
-        controller.playFromBeginning();
-      }
-    });
-
-    return SizedBox(
-      width: double.infinity,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconViewer(controller: controller, width: 128, height: 128),
-          Text(
-            'Setting Up Map',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MapWidgetSuccess extends StatelessWidget
-    implements OnPointAnnotationClickListener {
-  final Logger logger = sl<Logger>();
-  final List<PlaceLocation> locations;
-  MapboxMap? _mapboxMap;
-  PointAnnotationManager? _pointAnnotationManager;
-  final void Function(PlaceLocation) onLocationSelected;
-
-  MapWidgetSuccess({
-    super.key,
-    required this.locations,
-    required this.onLocationSelected,
-  });
-
-  final Map<String, PlaceLocation> _annotationMap = {};
-  final CameraOptions _initialCameraOptions = CameraOptions(
-    center: Point(coordinates: Position(-99.133209, 19.432608)),
-    zoom: 13.0,
-  );
-
-  void _onMapCreated(MapboxMap mapboxMap) async {
-    _mapboxMap = mapboxMap;
-
-    await mapboxMap.compass.updateSettings(CompassSettings(enabled: false));
-
-    await mapboxMap.scaleBar.updateSettings(ScaleBarSettings(enabled: false));
-
-    await mapboxMap.logo.updateSettings(
-      LogoSettings(
-        position: OrnamentPosition.TOP_LEFT,
-        marginLeft: 16,
-        marginTop: 16,
-      ),
-    );
-
-    await mapboxMap.attribution.updateSettings(
-      AttributionSettings(
-        position: OrnamentPosition.BOTTOM_RIGHT,
-        marginRight: 16,
-        marginBottom: 16,
-      ),
-    );
-
-    await _addMarkersToMap(mapboxMap);
-  }
-
-  Future<void> _addMarkersToMap(MapboxMap mapboxMap) async {
-    _pointAnnotationManager = await mapboxMap.annotations
-        .createPointAnnotationManager();
-    _pointAnnotationManager?.addOnPointAnnotationClickListener(this);
-
-    for (var loc in locations) {
-      try {
-        final place = PlaceIcon.fromId(loc.type);
-
-        final ByteData bytes = await rootBundle.load(place.asset);
-        final Uint8List imageBytes = bytes.buffer.asUint8List();
-
-        final pointAnnotationOptions = PointAnnotationOptions(
-          geometry: Point(coordinates: Position(loc.longitude, loc.latitude)),
-          image: imageBytes,
-          iconSize: 0.1,
-        );
-
-        final annotation = await _pointAnnotationManager!.create(
-          pointAnnotationOptions,
-        );
-        _annotationMap[annotation.id] = loc;
-      } catch (e) {
-        logger.e('Log of Manager -> Error to add pin of ${loc.name}: $e');
-      }
-    }
-  }
-
-  @override
-  void onPointAnnotationClick(PointAnnotation annotation) {
-    final selectedLocation = _annotationMap[annotation.id];
-
-    if (selectedLocation != null) {
-      onLocationSelected(selectedLocation);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        MapWidget(
-          textureView: true,
-          key: const ValueKey('Pulse Map'),
-          onMapCreated: _onMapCreated,
-          cameraOptions: _initialCameraOptions,
-          styleUri: MapboxStyles.DARK,
-        ),
-      ],
-    );
-  }
-}
