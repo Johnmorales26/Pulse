@@ -1,3 +1,4 @@
+import 'package:pulse/features/map/domain/model/place_comments.dart';
 import 'package:pulse/features/map/domain/model/place_photos.dart';
 import 'package:pulse/features/map/domain/model/place_rating.dart';
 
@@ -12,6 +13,7 @@ class PlaceLocation {
   final PlacePhotos photos;
   final PlaceRating rating;
   final String type;
+  final List<PlaceComments> comments;
 
   PlaceLocation({
     required this.id,
@@ -24,5 +26,6 @@ class PlaceLocation {
     required this.photos,
     required this.rating,
     required this.type,
+    required this.comments,
   });
 }

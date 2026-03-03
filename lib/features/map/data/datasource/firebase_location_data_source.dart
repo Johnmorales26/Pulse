@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:pulse/features/map/domain/model/place_comments.dart';
 
 import '../../domain/model/place_location.dart';
 import '../../domain/model/place_photos.dart';
@@ -42,6 +43,16 @@ class FirebaseLocationDataSource {
           totalReviews: ratingMap[Constants.DATA_TOTAL_REVIEWS] ?? 0,
         ),
         type: (data[Constants.DATA_TYPE] ?? '').toString().trim(),
+        comments: (data[Constants.DATA_COMMENTS] as List? ?? []).map((e) {
+          final commentMap = e as Map<String, dynamic>;
+          return PlaceComments(
+            createdAt: (commentMap[Constants.DATA_CREATED_AT] as Timestamp?)
+                    ?.toDate() ??
+                DateTime.now(),
+            createdBy: commentMap[Constants.DATA_CREATED_BY] as String? ?? '',
+            comment: commentMap[Constants.DATA_COMMENT] as String? ?? '',
+          );
+        }).toList().reversed.toList(),
       );
     }).toList();
   }

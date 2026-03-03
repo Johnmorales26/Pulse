@@ -1,13 +1,216 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pulse/core/utils/date_time_extensions.dart';
+import 'package:pulse/features/map/domain/model/place_comments.dart';
 import 'package:pulse/features/map/domain/model/place_location.dart';
+import 'package:pulse/features/place_detail/presentation/bloc/place_detail_bloc.dart';
+import 'package:pulse/features/place_detail/presentation/bloc/place_detail_intent.dart';
+import 'package:pulse/features/place_detail/presentation/bloc/place_detail_state.dart';
+import 'package:pulse/features/place_detail/presentation/widgets/image_carousel.dart';
 
-class PlaceDetailScreen extends StatelessWidget {
-  const PlaceDetailScreen({super.key, required this.location});
+class PlaceDetailScreen extends StatefulWidget {
+  const PlaceDetailScreen({super.key, required this.placeId});
 
-  final PlaceLocation location;
+  final String placeId;
+
+  @override
+  State<PlaceDetailScreen> createState() => _PlaceDetailScreenState();
+}
+
+class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
+  final TextEditingController _commentController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // AQUÍ: Disparamos el intent inicial; el BLoC se suscribe al Stream de Firebase
+    context.read<PlaceDetailBloc>().add(
+      ObservePlaceDetailIntent(widget.placeId),
+    );
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Text(location.name));
+    return Scaffold(
+      body: SafeArea(
+        child: BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
+          listenWhen: (previous, current) =>
+              previous.status == PlaceDetailStatus.loading &&
+              previous.place != null &&
+              current.status != PlaceDetailStatus.loading,
+          listener: (context, state) {
+            if (state.status == PlaceDetailStatus.success) {
+              _commentController.clear();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Comentario añadido')),
+              );
+            }
+            if (state.status == PlaceDetailStatus.error) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.errorMessage ?? 'Error al añadir comentario',
+                  ),
+                ),
+              );
+            }
+          },
+          builder: (context, state) {
+            // ESTADO initial / loading sin place → carga inicial del lugar
+            if (state.place == null) {
+              if (state.status == PlaceDetailStatus.error) {
+                // ESTADO error en la carga inicial — no hay place que mostrar
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          state.errorMessage ?? 'Error al cargar el lugar',
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: () =>
+                              context.read<PlaceDetailBloc>().add(
+                                ObservePlaceDetailIntent(widget.placeId),
+                              ),
+                          child: const Text('Reintentar'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              // ESTADO loading inicial → spinner
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            // AQUÍ: Consumiendo el estado exitoso — extraemos el place del estado
+            final PlaceLocation place = state.place!;
+            final bool isSubmittingComment =
+                state.status == PlaceDetailStatus.loading;
+
+            return _PlaceDetailBody(
+              place: place,
+              comments: state.comments,
+              commentController: _commentController,
+              isSubmittingComment: isSubmittingComment,
+              placeId: widget.placeId,
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget interno que renderiza el contenido visual una vez que [place] está disponible.
+/// No modifica ningún componente de diseño existente.
+class _PlaceDetailBody extends StatelessWidget {
+  const _PlaceDetailBody({
+    required this.place,
+    required this.comments,
+    required this.commentController,
+    required this.isSubmittingComment,
+    required this.placeId,
+  });
+
+  final PlaceLocation place;
+  final List<PlaceComments> comments;
+  final TextEditingController commentController;
+  final bool isSubmittingComment;
+  final String placeId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Stack que superpone el botón de cierre sobre el carrusel sin
+          // alterar la lógica interna de ImageCarousel.
+          Stack(
+            children: [
+              ImageCarousel(photos: place.photos),
+              const Positioned(
+                top: 8.0,
+                right: 8.0,
+                child: CloseButton(),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8.0),
+          Text(
+            place.name,
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 8.0),
+          Expanded(
+            child: SizedBox(
+              width: double.infinity,
+              child: ListView.builder(
+                itemCount: comments.length,
+                itemBuilder: (context, index) {
+                  final comment = comments[index];
+                  return ListTile(
+                    leading: Image.asset(
+                      'assets/icons/locations/ic_location_user.png',
+                    ),
+                    title: Text(comment.comment),
+                    subtitle: Text(comment.createdAt.toDisplayFormat()),
+                  );
+                },
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: commentController,
+                  decoration: InputDecoration(
+                    hintText: 'Escribe un comentario...',
+                    // AQUÍ: Indicador de carga inline mientras se envía el comentario
+                    suffixIcon: isSubmittingComment
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          )
+                        : IconButton(
+                            onPressed: () {
+                              if (commentController.text.isNotEmpty) {
+                                context.read<PlaceDetailBloc>().add(
+                                  AddCommentIntent(
+                                    placeId,
+                                    commentController.text,
+                                  ),
+                                );
+                              }
+                            },
+                            icon: const Icon(Icons.send),
+                          ),
+                    border: const OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }

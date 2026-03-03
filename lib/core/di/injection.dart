@@ -10,6 +10,7 @@ import 'package:pulse/features/map/domain/repository/place_location_repository.d
 import 'package:pulse/features/map/domain/usecases/get_map_location_use_case.dart';
 import 'package:pulse/features/map/domain/usecases/get_user_location_use_case.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
+import 'package:pulse/features/place_detail/place_detail_injection.dart';
 
 final sl = GetIt.instance;
 
@@ -51,4 +52,7 @@ Future<void> initDependencies() async {
   );
 
   sl.registerFactory<MapBloc>(() => MapBloc(sl(), sl(), sl()));
+
+  initPlaceDetailModule();
+
 }

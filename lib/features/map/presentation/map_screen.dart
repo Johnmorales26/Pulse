@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pulse/core/di/injection.dart';
+import 'package:pulse/core/navigation/router_names.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
@@ -81,7 +82,7 @@ class MapScreen extends StatelessWidget {
                           },
                           onTap: (location) {
                             context.pushNamed(
-                              'placeDetail',
+                              RouterNames.placeDetail,
                               pathParameters: {'id': location.id},
                               extra: location,
                             );

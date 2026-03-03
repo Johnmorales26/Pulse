@@ -52,6 +52,7 @@ dependencies:
   lordicon: ^1.0.3
   geolocator: ^14.0.2
   toastification: ^3.0.3
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

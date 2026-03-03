@@ -17,4 +17,6 @@ class Constants {
   static const String DATA_STARS = 'stars';
   static const String DATA_TOTAL_REVIEWS = 'totalReviews';
   static const String DATA_TYPE = 'type';
+  static const String DATA_COMMENTS = 'comments';
+  static const String DATA_COMMENT = 'comment';
 }
