@@ -7,6 +7,7 @@ import 'package:pulse/features/place_detail/presentation/bloc/place_detail_bloc.
 import 'package:pulse/features/place_detail/presentation/bloc/place_detail_intent.dart';
 import 'package:pulse/features/place_detail/presentation/bloc/place_detail_state.dart';
 import 'package:pulse/features/place_detail/presentation/widgets/image_carousel.dart';
+import 'package:pulse/features/widgets/dark_text_field.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   const PlaceDetailScreen({super.key, required this.placeId});
@@ -38,13 +39,37 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        // BlocBuilder aislado: solo reconstruye el título, no el Scaffold entero.
+        title: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+          buildWhen: (prev, curr) => prev.place?.name != curr.place?.name,
+          builder: (context, state) {
+            if (state.place != null) return Text(state.place!.name);
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
       body: SafeArea(
         child: BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
           listenWhen: (previous, current) =>
-              previous.status == PlaceDetailStatus.loading &&
-              previous.place != null &&
-              current.status != PlaceDetailStatus.loading,
+              // Captura la respuesta tras enviar un comentario (loading → otro).
+              (previous.status == PlaceDetailStatus.loading &&
+                  previous.place != null &&
+                  current.status != PlaceDetailStatus.loading) ||
+              // Captura el rechazo por sesión sin necesidad de pasar por loading.
+              current.status == PlaceDetailStatus.unauthenticated,
           listener: (context, state) {
+            if (state.status == PlaceDetailStatus.unauthenticated) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    state.errorMessage ?? 'Debes iniciar sesión para realizar esta acción.',
+                  ),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+              return;
+            }
             if (state.status == PlaceDetailStatus.success) {
               _commentController.clear();
               ScaffoldMessenger.of(context).showSnackBar(
@@ -78,10 +103,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () =>
-                              context.read<PlaceDetailBloc>().add(
-                                ObservePlaceDetailIntent(widget.placeId),
-                              ),
+                          onPressed: () => context.read<PlaceDetailBloc>().add(
+                            ObservePlaceDetailIntent(widget.placeId),
+                          ),
                           child: const Text('Reintentar'),
                         ),
                       ],
@@ -137,23 +161,7 @@ class _PlaceDetailBody extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Stack que superpone el botón de cierre sobre el carrusel sin
-          // alterar la lógica interna de ImageCarousel.
-          Stack(
-            children: [
-              ImageCarousel(photos: place.photos),
-              const Positioned(
-                top: 8.0,
-                right: 8.0,
-                child: CloseButton(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            place.name,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+          ImageCarousel(photos: place.photos),
           const SizedBox(height: 8.0),
           Expanded(
             child: SizedBox(
@@ -176,35 +184,32 @@ class _PlaceDetailBody extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextField(
+                child: DarkTextField(
+                  label: null,
+                  hint: 'Escribe un comentario...',
                   controller: commentController,
-                  decoration: InputDecoration(
-                    hintText: 'Escribe un comentario...',
-                    // AQUÍ: Indicador de carga inline mientras se envía el comentario
-                    suffixIcon: isSubmittingComment
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          )
-                        : IconButton(
-                            onPressed: () {
-                              if (commentController.text.isNotEmpty) {
-                                context.read<PlaceDetailBloc>().add(
-                                  AddCommentIntent(
-                                    placeId,
-                                    commentController.text,
-                                  ),
-                                );
-                              }
-                            },
-                            icon: const Icon(Icons.send),
+                  sufficIcon: isSubmittingComment
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Padding(
+                            padding: EdgeInsets.all(12.0),
+                            child: CircularProgressIndicator(strokeWidth: 2),
                           ),
-                    border: const OutlineInputBorder(),
-                  ),
+                        )
+                      : IconButton(
+                          onPressed: () {
+                            if (commentController.text.isNotEmpty) {
+                              context.read<PlaceDetailBloc>().add(
+                                AddCommentIntent(
+                                  placeId,
+                                  commentController.text,
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.send),
+                        ),
                 ),
               ),
             ],

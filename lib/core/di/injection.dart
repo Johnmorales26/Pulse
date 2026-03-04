@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/web.dart';
+import 'package:pulse/core/auth/data/repository/auth_repository_impl.dart';
+import 'package:pulse/core/auth/domain/repository/auth_repository.dart';
+import 'package:pulse/core/auth/domain/usecases/get_current_user_id_use_case.dart';
 import 'package:pulse/features/map/data/datasource/firebase_location_data_source.dart';
 import 'package:pulse/features/map/data/datasource/location_data_source.dart';
 import 'package:pulse/features/map/data/repository/location_device_repository_impl.dart';
@@ -10,6 +14,7 @@ import 'package:pulse/features/map/domain/repository/place_location_repository.d
 import 'package:pulse/features/map/domain/usecases/get_map_location_use_case.dart';
 import 'package:pulse/features/map/domain/usecases/get_user_location_use_case.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
+import 'package:pulse/features/add_place/add_place_injection.dart';
 import 'package:pulse/features/place_detail/place_detail_injection.dart';
 
 final sl = GetIt.instance;
@@ -28,6 +33,11 @@ Future<void> initDependencies() async {
   );
 
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
+  sl.registerLazySingleton(() => FirebaseAuth.instance);
+  sl.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(sl<FirebaseAuth>()),
+  );
+  sl.registerLazySingleton(() => GetCurrentUserIdUseCase(sl<AuthRepository>()));
 
   sl.registerLazySingleton<FirebaseLocationDataSource>(
     () => FirebaseLocationDataSource(sl()),
@@ -54,5 +64,6 @@ Future<void> initDependencies() async {
   sl.registerFactory<MapBloc>(() => MapBloc(sl(), sl(), sl()));
 
   initPlaceDetailModule();
+  initAddPlaceModule();
 
 }

@@ -9,8 +9,8 @@ import 'package:pulse/features/map/domain/model/place_location.dart';
 import 'package:pulse/features/map/domain/model/user_location.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
-import 'package:toastification/toastification.dart';
 
+// ignore: must_be_immutable
 class MapWidgetSuccess extends StatelessWidget
     implements OnPointAnnotationClickListener {
   final Logger logger = sl<Logger>();
@@ -20,12 +20,14 @@ class MapWidgetSuccess extends StatelessWidget
   PointAnnotationManager? _pointAnnotationManager;
   PointAnnotation? _userAnnotation;
   final void Function(PlaceLocation) onLocationSelected;
+  final void Function(double lat, double lng) onLongPress;
 
   MapWidgetSuccess({
     super.key,
     required this.userLocation,
     required this.locations,
     required this.onLocationSelected,
+    required this.onLongPress,
   });
 
   final Map<String, PlaceLocation> _annotationMap = {};
@@ -159,6 +161,13 @@ class MapWidgetSuccess extends StatelessWidget
         onMapCreated: _onMapCreated,
         cameraOptions: cameraOptions,
         styleUri: MapboxStyles.DARK,
+        // Detecta el tap sostenido y extrae las coordenadas geográficas.
+        // Los tipos de Mapbox (Position) no salen de este widget: hacia afuera
+        // solo viajan doubles primitivos a través del callback onLongPress.
+        onLongTapListener: (MapContentGestureContext ctx) {
+          final coords = ctx.point.coordinates;
+          onLongPress(coords.lat.toDouble(), coords.lng.toDouble());
+        },
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:pulse/features/map/domain/model/place_comments.dart';
 import 'package:pulse/features/map/domain/model/place_location.dart';
 
-enum PlaceDetailStatus { initial, loading, success, error }
+enum PlaceDetailStatus { initial, loading, success, error, unauthenticated }
 
 class PlaceDetailState {
   final PlaceDetailStatus status;

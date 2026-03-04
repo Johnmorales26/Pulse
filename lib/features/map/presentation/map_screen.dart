@@ -10,7 +10,6 @@ import 'package:pulse/features/map/presentation/widgets/location_card.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_loading.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_success.dart';
 
-
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
@@ -47,6 +46,14 @@ class MapScreen extends StatelessWidget {
                             SelectMapLocationIntent(location),
                           );
                         },
+                        // Recibe las coordenadas ya limpias (solo doubles) y
+                        // navega a la pantalla de creación de lugar.
+                        onLongPress: (lat, lng) {
+                          innerContext.pushNamed(
+                            RouterNames.addPlace,
+                            extra: (lat, lng),
+                          );
+                        },
                       );
                     }
 
@@ -60,9 +67,30 @@ class MapScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: FloatingActionButton(
                       onPressed: () {
-                        innerContext.read<MapBloc>().add(FetchUserLocationIntent());
+                        innerContext.read<MapBloc>().add(
+                          FetchUserLocationIntent(),
+                        );
                       },
                       child: Icon(Icons.my_location_outlined),
+                    ),
+                  ),
+                ),
+
+                SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Align(
+                      alignment: .topEnd,
+                      child: InkWell(
+                        onTap: () {
+                          context.pushNamed(RouterNames.auth);
+                        },
+                        child: Image.asset(
+                          'assets/icons/locations/ic_profile.png',
+                          width: 48.0,
+                          height: 48.0,
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -101,7 +129,3 @@ class MapScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
