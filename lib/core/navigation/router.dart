@@ -7,8 +7,12 @@ import 'package:pulse/features/add_place/add_place_injection.dart'
     as add_place_di;
 import 'package:pulse/features/add_place/presentation/add_place_screen.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_bloc.dart';
+import 'package:pulse/features/auth/presentation/auth_bloc.dart';
 import 'package:pulse/features/auth/presentation/login_screen.dart';
+import 'package:pulse/features/auth/presentation/sign_up_screen.dart';
 import 'package:pulse/features/map/presentation/map_screen.dart';
+import 'package:pulse/features/profile/presentation/profile_bloc.dart';
+import 'package:pulse/features/profile/presentation/profile_screen.dart';
 import 'package:pulse/features/place_detail/presentation/bloc/place_detail_bloc.dart';
 import 'package:pulse/features/place_detail/presentation/place_detail_screen.dart';
 
@@ -57,7 +61,39 @@ class AppRouter {
         path: '/auth',
         name: RouterNames.auth,
         pageBuilder: (context, state) {
-          return buildElegantTransitionPage(state: state, child: LoginScreen());
+          return buildElegantTransitionPage(
+            state: state,
+            child: BlocProvider(
+              create: (_) => sl<AuthBloc>(),
+              child: const LoginScreen(),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/sign-up',
+        name: RouterNames.signUp,
+        pageBuilder: (context, state) {
+          return buildElegantTransitionPage(
+            state: state,
+            child: BlocProvider(
+              create: (_) => sl<AuthBloc>(),
+              child: const SignUpScreen(),
+            ),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/profile',
+        name: RouterNames.profile,
+        pageBuilder: (context, state) {
+          return buildElegantTransitionPage(
+            state: state,
+            child: BlocProvider(
+              create: (_) => sl<ProfileBloc>(),
+              child: const ProfileScreen(),
+            ),
+          );
         },
       ),
     ],

@@ -6,13 +6,17 @@ class DarkTextField extends StatelessWidget {
     required this.hint,
     this.label,
     this.controller,
-    this.sufficIcon,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.obscureText = false,
   });
 
   final String hint;
   final String? label;
   final TextEditingController? controller;
-  final Widget? sufficIcon;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final bool obscureText;
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +28,15 @@ class DarkTextField extends StatelessWidget {
         if (label != null) const SizedBox(height: 8),
         TextField(
           controller: controller,
+          obscureText: obscureText,
           style: Theme.of(context).textTheme.bodyLarge,
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey.shade500),
             filled: true,
             fillColor: const Color(0xff2a2a2a),
-            suffixIcon: sufficIcon,
+            prefixIcon: prefixIcon,
+            suffixIcon: suffixIcon,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 20,
               vertical: 18,

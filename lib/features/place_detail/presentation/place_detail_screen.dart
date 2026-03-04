@@ -188,7 +188,7 @@ class _PlaceDetailBody extends StatelessWidget {
                   label: null,
                   hint: 'Escribe un comentario...',
                   controller: commentController,
-                  sufficIcon: isSubmittingComment
+                  suffixIcon: isSubmittingComment
                       ? const SizedBox(
                           width: 24,
                           height: 24,

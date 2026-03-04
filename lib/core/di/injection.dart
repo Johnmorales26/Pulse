@@ -15,7 +15,9 @@ import 'package:pulse/features/map/domain/usecases/get_map_location_use_case.dar
 import 'package:pulse/features/map/domain/usecases/get_user_location_use_case.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/add_place/add_place_injection.dart';
+import 'package:pulse/features/auth/auth_injection.dart';
 import 'package:pulse/features/place_detail/place_detail_injection.dart';
+import 'package:pulse/features/profile/profile_injection.dart';
 
 final sl = GetIt.instance;
 
@@ -65,5 +67,6 @@ Future<void> initDependencies() async {
 
   initPlaceDetailModule();
   initAddPlaceModule();
-
+  initAuthModule();
+  initProfileModule();
 }

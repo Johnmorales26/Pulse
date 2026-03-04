@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pulse/core/auth/domain/usecases/get_current_user_id_use_case.dart';
 import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router_names.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
@@ -83,12 +84,19 @@ class MapScreen extends StatelessWidget {
                       alignment: .topEnd,
                       child: InkWell(
                         onTap: () {
-                          context.pushNamed(RouterNames.auth);
+                          // Verificación sincrónica: si hay sesión activa navega
+                          // al perfil, si no al login — sin necesidad de BLoC global.
+                          final uid = sl<GetCurrentUserIdUseCase>()();
+                          if (uid != null) {
+                            context.pushNamed(RouterNames.profile);
+                          } else {
+                            context.pushNamed(RouterNames.auth);
+                          }
                         },
                         child: Image.asset(
                           'assets/icons/locations/ic_profile.png',
-                          width: 48.0,
-                          height: 48.0,
+                          width: 36.0,
+                          height: 36.0,
                         ),
                       ),
                     ),
