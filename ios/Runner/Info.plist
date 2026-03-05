@@ -2,30 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-<key>NSAppTransportSecurity</key>
-<dict>
-    <key>NSAllowsArbitraryLoads</key>
-    <true/>
-</dict>
-<key>LSApplicationQueriesSchemes</key>
-<array>
-    <string>comgooglemaps</string>
-    <string>waze</string>
-    <string>here-route</string>
-    <string>citymapper</string>
-    <string>navigon</string>
-    <string>transit</string>
-    <string>moovit</string>
-    <string>yandexmaps</string>
-    <string>yandexnavi</string>
-    <string>maps.me</string>
-    <string>dgis</string>
-    <string>osmandmaps</string>
-</array>
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>Pulse necesita tu ubicación para mostrar lugares cercanos a ti.</string>
-<key>NSLocationAlwaysUsageDescription</key>
-<string>Pulse necesita tu ubicación para mostrarte lugares cercanos.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -48,8 +24,32 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+		<string>waze</string>
+		<string>here-route</string>
+		<string>citymapper</string>
+		<string>navigon</string>
+		<string>transit</string>
+		<string>moovit</string>
+		<string>yandexmaps</string>
+		<string>yandexnavi</string>
+		<string>maps.me</string>
+		<string>dgis</string>
+		<string>osmandmaps</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Pulse necesita tu ubicación para mostrarte lugares cercanos.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Pulse necesita tu ubicación para mostrar lugares cercanos a ti.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

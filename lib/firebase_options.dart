@@ -50,19 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAnB8wc_4fJuZoAkw20JPnSmYCW4xRErIU',
-    appId: '1:73494678302:android:db0bedad3a0eec7946570f',
-    messagingSenderId: '73494678302',
-    projectId: 'pulse-app-7a777',
-    storageBucket: 'pulse-app-7a777.firebasestorage.app',
+    apiKey: 'AIzaSyDv9iOml85_9sxZbMXBsZGz8ZwZ0VRRZAg',
+    appId: '1:839277350037:android:ac47fd7bcc54760141df9c',
+    messagingSenderId: '839277350037',
+    projectId: 'pulse-e07c8',
+    storageBucket: 'pulse-e07c8.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyA5g5SA4vR6SsjLrezwNRccWZL6EL99Goo',
-    appId: '1:73494678302:ios:c4f365df9c17ecef46570f',
-    messagingSenderId: '73494678302',
-    projectId: 'pulse-app-7a777',
-    storageBucket: 'pulse-app-7a777.firebasestorage.app',
-    iosBundleId: 'com.pulse.pulse',
+    apiKey: 'AIzaSyC3N_S-ks3HzHYSSHD0xd9mdIrdrkhldJg',
+    appId: '1:839277350037:ios:1f4324bc52b7503741df9c',
+    messagingSenderId: '839277350037',
+    projectId: 'pulse-e07c8',
+    storageBucket: 'pulse-e07c8.firebasestorage.app',
+    iosBundleId: 'com.pulse.ios',
   );
+
 }

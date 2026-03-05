@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:logger/web.dart';
 import 'package:pulse/core/auth/data/repository/auth_repository_impl.dart';
@@ -26,6 +27,7 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   sl.registerLazySingleton<Logger>(
     () => Logger(
+      level: kReleaseMode ? Level.off : Level.debug,
       printer: PrettyPrinter(
         methodCount: 0,
         errorMethodCount: 5,
