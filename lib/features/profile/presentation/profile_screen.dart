@@ -16,16 +16,39 @@ import 'package:pulse/features/profile/presentation/bloc/saved_places_intent.dar
 import 'package:pulse/features/profile/presentation/bloc/saved_places_state.dart';
 import 'package:pulse/features/profile/presentation/widgets/gradient_avatar.dart';
 import 'package:pulse/features/widgets/option_tile.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   Future<void> _pickAndUploadImage(BuildContext context) async {
-    final picker = ImagePicker();
-    final picked = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
+    final l10n = AppLocalizations.of(context)!;
+
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_outlined),
+              title: Text(l10n.cameraOption),
+              onTap: () => Navigator.of(context).pop(ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_outlined),
+              title: Text(l10n.galleryOption),
+              onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
     );
+
+    if (source == null) return;
+
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(source: source, imageQuality: 80);
     if (picked == null) return;
     if (!context.mounted) return;
 
@@ -77,9 +100,10 @@ class ProfileScreen extends StatelessWidget {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: const Text('Perfil')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context)!.profileTitle)),
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
+            final l10n = AppLocalizations.of(context)!;
             // Carga inicial / cierre de sesión en progreso
             if (state is ProfileInitial || state is ProfileLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -143,7 +167,7 @@ class ProfileScreen extends StatelessWidget {
                           Text(
                             profile.username.isNotEmpty
                                 ? profile.username
-                                : 'Sin nombre',
+                                : l10n.noName,
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                           const SizedBox(height: 8.0),
@@ -153,19 +177,19 @@ class ProfileScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
                           OptionTile(
-                            option: 'Editar Perfil',
+                            option: l10n.editProfile,
                             icon: const Icon(Icons.edit),
                             onTap: () {},
                           ),
                           const SizedBox(height: 8.0),
                           OptionTile(
-                            option: 'Mis lugares guardados',
+                            option: l10n.savedPlacesOption,
                             icon: const Icon(Icons.bookmark_outline),
                             onTap: () => _showSavedPlacesBottomSheet(context),
                           ),
                           const SizedBox(height: 8.0),
                           OptionTile(
-                            option: 'Configuración',
+                            option: l10n.settingsOption,
                             icon: const Icon(Icons.settings_outlined),
                             onTap: () {},
                           ),
@@ -189,7 +213,7 @@ class ProfileScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                       ),
-                      child: const Text('Cerrar Sesión'),
+                      child: Text(l10n.signOutButton),
                     ),
                     const SizedBox(height: 16),
                   ],
@@ -214,6 +238,7 @@ class _SavedPlacesSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
@@ -237,9 +262,21 @@ class _SavedPlacesSheet extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Text(
-                'Mis lugares guardados',
-                style: Theme.of(context).textTheme.titleMedium,
+              child: BlocBuilder<SavedPlacesBloc, SavedPlacesState>(
+                buildWhen: (prev, curr) =>
+                    prev.runtimeType != curr.runtimeType ||
+                    (curr is SavedPlacesLoaded &&
+                        prev is SavedPlacesLoaded &&
+                        prev.places.length != curr.places.length),
+                builder: (context, state) {
+                  final subtitle = state is SavedPlacesLoaded
+                      ? l10n.savedPlacesCount(state.places.length)
+                      : l10n.savedPlacesOption;
+                  return Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  );
+                },
               ),
             ),
           ),
@@ -265,11 +302,11 @@ class _SavedPlacesSheet extends StatelessWidget {
 
                 if (state is SavedPlacesLoaded) {
                   if (state.places.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Padding(
-                        padding: EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(24),
                         child: Text(
-                          'Aún no tienes lugares guardados.',
+                          l10n.noSavedPlaces,
                           textAlign: TextAlign.center,
                         ),
                       ),

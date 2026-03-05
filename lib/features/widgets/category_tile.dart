@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pulse/features/map/domain/model/place_icon.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class CategoryTile extends StatelessWidget {
   const CategoryTile({super.key, required this.selected, required this.onTap});
@@ -23,7 +24,7 @@ class CategoryTile extends StatelessWidget {
             width: 36.0,
             height: 36.0,
           ),
-          title: Text(selected?.label ?? 'Select Category'),
+          title: Text(selected?.label ?? AppLocalizations.of(context)!.selectCategoryTitle),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
         ),
       ),

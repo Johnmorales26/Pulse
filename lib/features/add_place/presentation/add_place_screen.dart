@@ -7,6 +7,7 @@ import 'package:pulse/features/add_place/presentation/bloc/add_place_state.dart'
 import 'package:pulse/features/map/domain/model/place_icon.dart';
 import 'package:pulse/features/widgets/category_tile.dart';
 import 'package:pulse/features/widgets/dark_text_field.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class AddPlaceScreen extends StatefulWidget {
   const AddPlaceScreen({super.key, required this.lat, required this.lng});
@@ -42,20 +43,22 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Nuevo lugar')),
+      appBar: AppBar(title: Text(l10n.addPlaceTitle)),
       // BlocConsumer:
       //   • listener → efectos de lado: SnackBar de error y pop en éxito.
       //   • builder  → reconstruye solo cuando cambia selectedCategory o status.
       body: BlocConsumer<AddPlaceBloc, AddPlaceState>(
         listenWhen: (prev, curr) => prev.status != curr.status,
         listener: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
+
           if (state.status == AddPlaceStatus.unauthenticated) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  state.errorMessage ?? 'Debes iniciar sesión para realizar esta acción.',
-                ),
+                content: Text(state.errorMessage ?? l10n.signInRequired),
                 backgroundColor: Colors.orange,
               ),
             );
@@ -65,15 +68,15 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
               state.status == AddPlaceStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(state.errorMessage ?? 'Error desconocido.'),
+                content: Text(state.errorMessage ?? l10n.unknownError),
                 backgroundColor: Colors.redAccent,
               ),
             );
           }
           if (state.status == AddPlaceStatus.success) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Lugar guardado correctamente.'),
+              SnackBar(
+                content: Text(l10n.placeSavedSuccess),
                 backgroundColor: Colors.green,
               ),
             );
@@ -84,7 +87,9 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
             prev.selectedCategory != curr.selectedCategory ||
             prev.status != curr.status,
         builder: (context, state) {
+          final l10n = AppLocalizations.of(context)!;
           final isLoading = state.status == AddPlaceStatus.loading;
+
           return SafeArea(
             child: Column(
               children: [
@@ -101,19 +106,19 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                         ),
                         const SizedBox(height: 16.0),
                         DarkTextField(
-                          label: 'Name',
-                          hint: 'Enter place name',
+                          label: l10n.placeNameLabel,
+                          hint: l10n.placeNameHint,
                           controller: _nameController,
                         ),
                         const SizedBox(height: 8.0),
                         DarkTextField(
-                          label: 'Description',
-                          hint: 'Enter description',
+                          label: l10n.placeDescriptionLabel,
+                          hint: l10n.placeDescriptionHint,
                           controller: _descriptionController,
                         ),
                         const SizedBox(height: 16.0),
                         Text(
-                          'Category',
+                          l10n.categoryLabel,
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 4.0),
@@ -140,7 +145,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                             ),
                           )
                         : const Icon(Icons.save),
-                    label: Text(isLoading ? 'Guardando...' : 'Save Place'),
+                    label: Text(isLoading ? l10n.savingLabel : l10n.savePlaceButton),
                   ),
                 ),
               ],
@@ -172,6 +177,8 @@ void _showCategoryBottomSheet(BuildContext context) {
     ),
     isScrollControlled: true,
     builder: (sheetContext) {
+      final l10n = AppLocalizations.of(context)!;
+
       return ConstrainedBox(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.65,
@@ -194,7 +201,7 @@ void _showCategoryBottomSheet(BuildContext context) {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Select Category',
+                  l10n.selectCategoryTitle,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),

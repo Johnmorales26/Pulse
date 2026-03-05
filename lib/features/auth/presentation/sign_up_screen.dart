@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pulse/features/auth/presentation/auth_bloc.dart';
+import 'package:pulse/features/auth/presentation/auth_error_l10n.dart';
 import 'package:pulse/features/auth/presentation/auth_intent.dart';
 import 'package:pulse/features/auth/presentation/auth_state.dart';
 import 'package:pulse/features/widgets/dark_text_field.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -24,9 +26,10 @@ class SignUpScreen extends StatelessWidget {
           // Reemplaza toda la pila: el usuario ya está autenticado.
           context.goNamed('map');
         } else if (state is AuthError) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(localizeAuthError(state.message, l10n)),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -34,6 +37,7 @@ class SignUpScreen extends StatelessWidget {
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading;
+        final l10n = AppLocalizations.of(context)!;
 
         return Scaffold(
           // BOTÓN DE RETROCESO: salta directamente al mapa ignorando
@@ -57,20 +61,20 @@ class SignUpScreen extends StatelessWidget {
                       crossAxisAlignment: .start,
                       children: [
                         Text(
-                          'Crear cuenta',
+                          l10n.signUpTitle,
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
                         const SizedBox(height: 16.0),
                         DarkTextField(
-                          label: 'Usuario',
-                          hint: 'Pulse user',
+                          label: l10n.usernameLabel,
+                          hint: l10n.usernameHint,
                           controller: usernameController,
                           prefixIcon: const Icon(Icons.person),
                         ),
                         const SizedBox(height: 16.0),
                         DarkTextField(
-                          label: 'Correo electrónico',
-                          hint: 'example@correo.com',
+                          label: l10n.emailLabel,
+                          hint: l10n.emailHint,
                           controller: emailController,
                           prefixIcon: const Icon(Icons.email),
                         ),
@@ -79,8 +83,8 @@ class SignUpScreen extends StatelessWidget {
                           valueListenable: isPasswordObscured,
                           builder: (context, obscured, _) {
                             return DarkTextField(
-                              label: 'Contraseña',
-                              hint: 'Mínimo 6 caracteres',
+                              label: l10n.passwordLabel,
+                              hint: l10n.passwordHint,
                               controller: passwordController,
                               prefixIcon: const Icon(Icons.password),
                               obscureText: obscured,
@@ -101,8 +105,8 @@ class SignUpScreen extends StatelessWidget {
                           valueListenable: isPasswordObscured,
                           builder: (context, obscured, _) {
                             return DarkTextField(
-                              label: 'Confirmar contraseña',
-                              hint: 'Mínimo 6 caracteres',
+                              label: l10n.confirmPasswordLabel,
+                              hint: l10n.passwordHint,
                               controller: confirmPasswordController,
                               prefixIcon: const Icon(Icons.password),
                               obscureText: obscured,
@@ -149,7 +153,7 @@ class SignUpScreen extends StatelessWidget {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text('Crear cuenta'),
+                                : Text(l10n.signUpButton),
                           ),
                         ),
                       ],
@@ -168,9 +172,9 @@ class SignUpScreen extends StatelessWidget {
                           color: Colors.grey.shade400,
                         ),
                         children: [
-                          const TextSpan(text: '¿Ya tienes una cuenta? '),
+                          TextSpan(text: '${l10n.hasAccountPrompt} '),
                           TextSpan(
-                            text: 'Inicia sesión',
+                            text: l10n.signInLink,
                             style: const TextStyle(
                               color: Colors.purple,
                               fontWeight: FontWeight.w600,

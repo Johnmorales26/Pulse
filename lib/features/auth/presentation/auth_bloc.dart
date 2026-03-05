@@ -30,7 +30,7 @@ class AuthBloc extends Bloc<AuthIntent, AuthState> {
       emit(AuthError(_mapFirebaseError(e)));
     } catch (e) {
       _logger.e('Error inesperado en sign-in: $e');
-      emit(AuthError('Error inesperado. Intenta de nuevo.'));
+      emit(AuthError('unknownError'));
     }
   }
 
@@ -40,19 +40,19 @@ class AuthBloc extends Bloc<AuthIntent, AuthState> {
   ) async {
     // Validaciones locales — se resuelven antes de hacer cualquier llamada de red.
     if (intent.username.trim().isEmpty) {
-      emit(AuthError('El nombre de usuario es obligatorio.'));
+      emit(AuthError('authErrorEmptyUsername'));
       return;
     }
     if (!intent.email.contains('@')) {
-      emit(AuthError('El correo electrónico no es válido.'));
+      emit(AuthError('authErrorInvalidEmail'));
       return;
     }
     if (intent.password.length < 6) {
-      emit(AuthError('La contraseña debe tener al menos 6 caracteres.'));
+      emit(AuthError('authErrorWeakPassword'));
       return;
     }
     if (intent.password != intent.confirmPassword) {
-      emit(AuthError('Las contraseñas no coinciden. Inténtalo de nuevo.'));
+      emit(AuthError('authErrorPasswordMismatch'));
       return;
     }
 
@@ -68,21 +68,23 @@ class AuthBloc extends Bloc<AuthIntent, AuthState> {
       emit(AuthError(_mapFirebaseError(e)));
     } catch (e) {
       _logger.e('Error inesperado en sign-up: $e');
-      emit(AuthError('Error inesperado. Intenta de nuevo.'));
+      emit(AuthError('unknownError'));
     }
   }
 
+  // Devuelve el nombre de la clave ARB, no un string traducido.
+  // La UI es responsable de convertirlo al idioma del usuario.
   String _mapFirebaseError(FirebaseAuthException e) {
     return switch (e.code) {
-      'invalid-email' => 'El correo electrónico no es válido.',
-      'user-disabled' => 'Esta cuenta ha sido deshabilitada.',
-      'user-not-found' => 'No existe una cuenta con este correo.',
-      'wrong-password' || 'invalid-credential' => 'Contraseña incorrecta.',
-      'email-already-in-use' => 'Este correo ya está registrado.',
-      'weak-password' => 'La contraseña debe tener al menos 6 caracteres.',
-      'too-many-requests' => 'Demasiados intentos. Espera un momento.',
-      'network-request-failed' => 'Sin conexión a internet.',
-      _ => 'Error de autenticación. Intenta de nuevo.',
+      'invalid-email' => 'authErrorInvalidEmail',
+      'user-disabled' => 'authErrorUserDisabled',
+      'user-not-found' || 'wrong-password' || 'invalid-credential' =>
+        'authErrorWrongCredentials',
+      'email-already-in-use' => 'authErrorEmailInUse',
+      'weak-password' => 'authErrorWeakPassword',
+      'too-many-requests' => 'authErrorTooManyRequests',
+      'network-request-failed' => 'authErrorNetworkFailed',
+      _ => 'authErrorGeneric',
     };
   }
 }

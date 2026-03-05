@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router.dart';
@@ -38,6 +39,23 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: theme.dark(),
       routerConfig: AppRouter.router,
+      // i18n: Flutter delega la resolución del idioma al OS del dispositivo.
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      // Resuelve el idioma del dispositivo a uno de los locales soportados.
+      // Cubre variantes regionales (en_US, es_419, en_GB) que el algoritmo
+      // por defecto de Flutter no siempre mapea correctamente.
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (locale != null) {
+          for (final supported in supportedLocales) {
+            if (supported.languageCode == locale.languageCode) {
+              return supported;
+            }
+          }
+        }
+        // El OS está en un idioma no soportado → fallback a inglés.
+        return const Locale('en');
+      },
     );
   }
 }

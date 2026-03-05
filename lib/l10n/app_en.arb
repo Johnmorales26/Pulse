@@ -1,0 +1,226 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Pulse",
+  "@appTitle": { "description": "The application name" },
+
+  "loginTitle": "Welcome back",
+  "@loginTitle": { "description": "Title shown on the login screen" },
+
+  "loginButton": "Sign in",
+  "@loginButton": { "description": "Label for the sign-in button" },
+
+  "signUpTitle": "Create account",
+  "@signUpTitle": { "description": "Title shown on the sign-up screen" },
+
+  "signUpButton": "Sign up",
+  "@signUpButton": { "description": "Label for the sign-up button" },
+
+  "emailLabel": "Email",
+  "@emailLabel": { "description": "Label for the email text field" },
+
+  "passwordLabel": "Password",
+  "@passwordLabel": { "description": "Label for the password text field" },
+
+  "usernameLabel": "Username",
+  "@usernameLabel": { "description": "Label for the username text field" },
+
+  "confirmPasswordLabel": "Confirm password",
+  "@confirmPasswordLabel": { "description": "Label for the confirm-password field" },
+
+  "noAccountPrompt": "Don't have an account?",
+  "@noAccountPrompt": { "description": "Prompt shown below the login form" },
+
+  "signUpLink": "Sign up",
+  "@signUpLink": { "description": "Tappable link that goes to the sign-up screen" },
+
+  "hasAccountPrompt": "Already have an account?",
+  "@hasAccountPrompt": { "description": "Prompt shown below the sign-up form" },
+
+  "signInLink": "Sign in",
+  "@signInLink": { "description": "Tappable link that goes back to login" },
+
+  "profileTitle": "Profile",
+  "@profileTitle": { "description": "AppBar title of the profile screen" },
+
+  "editProfile": "Edit Profile",
+  "@editProfile": { "description": "Option tile label for editing profile" },
+
+  "savedPlacesOption": "My saved places",
+  "@savedPlacesOption": { "description": "Option tile label for saved places" },
+
+  "settingsOption": "Settings",
+  "@settingsOption": { "description": "Option tile label for settings" },
+
+  "signOutButton": "Sign Out",
+  "@signOutButton": { "description": "Label for the sign-out button" },
+
+  "noName": "No name",
+  "@noName": { "description": "Fallback text when the user has no username set" },
+
+  "saveButton": "Save",
+  "@saveButton": { "description": "Label for the save/bookmark button (not yet saved)" },
+
+  "savedButton": "Saved",
+  "@savedButton": { "description": "Label for the save/bookmark button (already saved)" },
+
+  "removeSavedTooltip": "Remove from saved",
+  "@removeSavedTooltip": { "description": "Tooltip when bookmark is active" },
+
+  "addSavedTooltip": "Save place",
+  "@addSavedTooltip": { "description": "Tooltip when bookmark is inactive" },
+
+  "navigateButton": "Go",
+  "@navigateButton": { "description": "Label for the navigate/directions button" },
+
+  "navigateTooltip": "Navigate",
+  "@navigateTooltip": { "description": "Tooltip for the navigate button" },
+
+  "commentHint": "Write a comment...",
+  "@commentHint": { "description": "Hint text inside the comment text field" },
+
+  "commentAdded": "Comment added",
+  "@commentAdded": { "description": "SnackBar message after a comment is successfully submitted" },
+
+  "commentError": "Error adding comment",
+  "@commentError": { "description": "SnackBar message when adding a comment fails" },
+
+  "retryButton": "Retry",
+  "@retryButton": { "description": "Label for the retry button on error screens" },
+
+  "openWith": "Open with",
+  "@openWith": { "description": "Title of the map picker bottom sheet" },
+
+  "noMapsInstalled": "No map applications installed.",
+  "@noMapsInstalled": { "description": "SnackBar shown when no map app is found" },
+
+  "noSavedPlaces": "You haven't saved any places yet.",
+  "@noSavedPlaces": { "description": "Empty state message in the saved places sheet" },
+
+  "signInRequired": "You must be signed in to perform this action.",
+  "@signInRequired": { "description": "SnackBar shown when an unauthenticated user tries a protected action" },
+
+  "signInToSave": "You must be signed in to save places.",
+  "@signInToSave": { "description": "SnackBar shown when an unauthenticated user tries to bookmark" },
+
+  "saveFailed": "Could not update saved list.",
+  "@saveFailed": { "description": "SnackBar shown when toggling a bookmark fails" },
+
+  "loadPlaceError": "Error loading place",
+  "@loadPlaceError": { "description": "Error message shown when place data cannot be fetched" },
+
+  "authErrorWrongCredentials": "Incorrect email or password.",
+  "@authErrorWrongCredentials": { "description": "Auth error for wrong-password login attempt" },
+
+  "authErrorEmailInUse": "This email is already registered.",
+  "@authErrorEmailInUse": { "description": "Auth error when email is already taken on sign-up" },
+
+  "authErrorWeakPassword": "Password must be at least 6 characters.",
+  "@authErrorWeakPassword": { "description": "Validation message for weak passwords" },
+
+  "authErrorPasswordMismatch": "Passwords do not match.",
+  "@authErrorPasswordMismatch": { "description": "Validation message when passwords don't match" },
+
+  "authErrorEmptyUsername": "Username cannot be empty.",
+  "@authErrorEmptyUsername": { "description": "Validation message when username is blank" },
+
+  "authErrorInvalidEmail": "Please enter a valid email address.",
+  "@authErrorInvalidEmail": { "description": "Validation message for malformed email" },
+
+  "addPlaceTitle": "New place",
+  "@addPlaceTitle": { "description": "AppBar title on the add-place screen" },
+
+  "placeNameLabel": "Name",
+  "@placeNameLabel": { "description": "Label for the place name text field" },
+
+  "placeNameHint": "Enter place name",
+  "@placeNameHint": { "description": "Hint for the place name text field" },
+
+  "placeDescriptionLabel": "Description",
+  "@placeDescriptionLabel": { "description": "Label for the place description text field" },
+
+  "placeDescriptionHint": "Enter description",
+  "@placeDescriptionHint": { "description": "Hint for the place description text field" },
+
+  "categoryLabel": "Category",
+  "@categoryLabel": { "description": "Section title above the category selector" },
+
+  "selectCategoryTitle": "Select Category",
+  "@selectCategoryTitle": { "description": "Title of the category picker bottom sheet" },
+
+  "savePlaceButton": "Save Place",
+  "@savePlaceButton": { "description": "Label on the save FAB when idle" },
+
+  "savingLabel": "Saving...",
+  "@savingLabel": { "description": "Label on the save FAB while uploading" },
+
+  "placeSavedSuccess": "Place saved successfully.",
+  "@placeSavedSuccess": { "description": "SnackBar shown after a place is saved" },
+
+  "unknownError": "An unknown error occurred.",
+  "@unknownError": { "description": "Generic fallback error message" },
+
+  "emailHint": "example@email.com",
+  "@emailHint": { "description": "Hint text for the email field" },
+
+  "passwordHint": "Min. 6 characters",
+  "@passwordHint": { "description": "Hint text for password fields" },
+
+  "usernameHint": "Pulse user",
+  "@usernameHint": { "description": "Hint text for the username field" },
+
+  "forgotPasswordButton": "Forgot your password?",
+  "@forgotPasswordButton": { "description": "Tappable text below the login form" },
+
+  "authErrorUserDisabled": "This account has been disabled.",
+  "@authErrorUserDisabled": { "description": "Auth error when user account is disabled" },
+
+  "authErrorTooManyRequests": "Too many attempts. Please wait a moment.",
+  "@authErrorTooManyRequests": { "description": "Auth error for rate-limited requests" },
+
+  "authErrorNetworkFailed": "No internet connection.",
+  "@authErrorNetworkFailed": { "description": "Auth error when the device is offline" },
+
+  "authErrorGeneric": "Authentication error. Please try again.",
+  "@authErrorGeneric": { "description": "Generic fallback for unhandled Firebase Auth errors" },
+
+  "myLocationTooltip": "Center on my location",
+  "@myLocationTooltip": { "description": "Tooltip for the my-location FAB on the map" },
+
+  "profileTooltip": "Profile",
+  "@profileTooltip": { "description": "Tooltip for the profile icon on the map" },
+
+  "mapLoadError": "Could not load the map: {error}",
+  "@mapLoadError": {
+    "description": "Error shown when the map fails to load",
+    "placeholders": {
+      "error": { "type": "String", "example": "network error" }
+    }
+  },
+
+  "locationPermissionDenied": "Location permission denied. Enable it in Settings.",
+  "@locationPermissionDenied": { "description": "SnackBar shown when the user refuses GPS permission" },
+
+  "openSettings": "Open Settings",
+  "@openSettings": { "description": "Action button label on the location-permission SnackBar" },
+
+  "commentDateFormat": "MMM dd, yyyy · HH:mm",
+  "@commentDateFormat": { "description": "intl DateFormat pattern for comment timestamps in English" },
+
+  "changeProfilePicture": "Change profile picture",
+  "@changeProfilePicture": { "description": "Title of the image source picker bottom sheet" },
+
+  "cameraOption": "Take a photo",
+  "@cameraOption": { "description": "Option to pick image from camera" },
+
+  "galleryOption": "Choose from gallery",
+  "@galleryOption": { "description": "Option to pick image from gallery" },
+
+  "savedPlacesCount": "{count, plural, =0{No saved places} =1{1 saved place} other{{count} saved places}}",
+  "@savedPlacesCount": {
+    "description": "Plural-aware saved places count shown in the sheet header",
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
+}

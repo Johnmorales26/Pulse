@@ -10,12 +10,14 @@ import 'package:pulse/features/map/presentation/map_state.dart';
 import 'package:pulse/features/map/presentation/widgets/location_card.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_loading.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_success.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: BlocProvider(
         create: (context) => sl<MapBloc>()..add(FetchMapLocationsIntent()),
@@ -34,7 +36,7 @@ class MapScreen extends StatelessWidget {
                     if (state is MapInitial || state is MapLoading) {
                       return const MapWidgetLoading();
                     } else if (state is MapError) {
-                      return Center(child: Text('Error: ${state.error}'));
+                      return Center(child: Text(l10n.mapLoadError(state.error)));
                     } else if (state is MapSuccess) {
                       final locations = state.locations;
                       final userLocation = state.userLocation;
@@ -67,6 +69,7 @@ class MapScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 8.0),
                     child: FloatingActionButton(
+                      tooltip: l10n.myLocationTooltip,
                       onPressed: () {
                         innerContext.read<MapBloc>().add(
                           FetchUserLocationIntent(),
@@ -82,21 +85,24 @@ class MapScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Align(
                       alignment: .topEnd,
-                      child: InkWell(
-                        onTap: () {
-                          // Verificación sincrónica: si hay sesión activa navega
-                          // al perfil, si no al login — sin necesidad de BLoC global.
-                          final uid = sl<GetCurrentUserIdUseCase>()();
-                          if (uid != null) {
-                            context.pushNamed(RouterNames.profile);
-                          } else {
-                            context.pushNamed(RouterNames.auth);
-                          }
-                        },
-                        child: Image.asset(
-                          'assets/icons/locations/ic_profile.png',
-                          width: 36.0,
-                          height: 36.0,
+                      child: Tooltip(
+                        message: l10n.profileTooltip,
+                        child: InkWell(
+                          onTap: () {
+                            // Verificación sincrónica: si hay sesión activa navega
+                            // al perfil, si no al login — sin necesidad de BLoC global.
+                            final uid = sl<GetCurrentUserIdUseCase>()();
+                            if (uid != null) {
+                              context.pushNamed(RouterNames.profile);
+                            } else {
+                              context.pushNamed(RouterNames.auth);
+                            }
+                          },
+                          child: Image.asset(
+                            'assets/icons/locations/ic_profile.png',
+                            width: 36.0,
+                            height: 36.0,
+                          ),
                         ),
                       ),
                     ),

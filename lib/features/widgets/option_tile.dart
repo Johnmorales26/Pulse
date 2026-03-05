@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class OptionTile extends StatelessWidget {
-  const OptionTile({super.key, required this.icon, required this.onTap, required this.option});
+  const OptionTile({
+    super.key,
+    required this.icon,
+    required this.onTap,
+    required this.option,
+  });
 
   final Widget icon;
   final String option;

@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pulse/core/navigation/router_names.dart';
 import 'package:pulse/features/auth/presentation/auth_bloc.dart';
+import 'package:pulse/features/auth/presentation/auth_error_l10n.dart';
 import 'package:pulse/features/auth/presentation/auth_intent.dart';
 import 'package:pulse/features/auth/presentation/auth_state.dart';
 import 'package:pulse/features/widgets/dark_text_field.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -22,9 +24,10 @@ class LoginScreen extends StatelessWidget {
         if (state is AuthSuccess) {
           context.goNamed('map');
         } else if (state is AuthError) {
+          final l10n = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(localizeAuthError(state.message, l10n)),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -32,11 +35,9 @@ class LoginScreen extends StatelessWidget {
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading;
+        final l10n = AppLocalizations.of(context)!;
 
         return Scaffold(
-          // BOTÓN DE RETROCESO: cierra el flujo de auth y regresa al mapa.
-          // context.go('/') limpia la pila completa, evitando que login
-          // quede vivo detrás si el usuario llegó desde un deep link.
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.close),
@@ -56,13 +57,13 @@ class LoginScreen extends StatelessWidget {
                       crossAxisAlignment: .start,
                       children: [
                         Text(
-                          'Iniciar Sesión',
+                          l10n.loginTitle,
                           style: Theme.of(context).textTheme.headlineLarge,
                         ),
                         const SizedBox(height: 16.0),
                         DarkTextField(
-                          label: 'Correo electrónico',
-                          hint: 'example@correo.com',
+                          label: l10n.emailLabel,
+                          hint: l10n.emailHint,
                           controller: emailController,
                           prefixIcon: const Icon(Icons.email),
                         ),
@@ -71,8 +72,8 @@ class LoginScreen extends StatelessWidget {
                           valueListenable: isPasswordObscured,
                           builder: (context, obscured, _) {
                             return DarkTextField(
-                              label: 'Contraseña',
-                              hint: '12345678',
+                              label: l10n.passwordLabel,
+                              hint: l10n.passwordHint,
                               controller: passwordController,
                               prefixIcon: const Icon(Icons.password),
                               obscureText: obscured,
@@ -93,7 +94,7 @@ class LoginScreen extends StatelessWidget {
                           alignment: .centerEnd,
                           child: TextButton(
                             onPressed: isLoading ? null : () {},
-                            child: const Text('¿Olvidaste tu contraseña?'),
+                            child: Text(l10n.forgotPasswordButton),
                           ),
                         ),
                         const SizedBox(height: 16.0),
@@ -125,7 +126,7 @@ class LoginScreen extends StatelessWidget {
                                       strokeWidth: 2,
                                     ),
                                   )
-                                : const Text('Iniciar Sesión'),
+                                : Text(l10n.loginButton),
                           ),
                         ),
                       ],
@@ -145,9 +146,9 @@ class LoginScreen extends StatelessWidget {
                           color: Colors.grey.shade400,
                         ),
                         children: [
-                          const TextSpan(text: '¿No tienes una cuenta? '),
+                          TextSpan(text: '${l10n.noAccountPrompt} '),
                           TextSpan(
-                            text: 'Regístrate',
+                            text: l10n.signUpLink,
                             style: const TextStyle(
                               color: Colors.purple,
                               fontWeight: FontWeight.w600,

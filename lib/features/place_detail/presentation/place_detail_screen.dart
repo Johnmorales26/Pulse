@@ -11,6 +11,7 @@ import 'package:pulse/features/place_detail/presentation/bloc/place_detail_inten
 import 'package:pulse/features/place_detail/presentation/bloc/place_detail_state.dart';
 import 'package:pulse/features/place_detail/presentation/widgets/image_carousel.dart';
 import 'package:pulse/features/widgets/dark_text_field.dart';
+import 'package:pulse/l10n/app_localizations.dart';
 
 class PlaceDetailScreen extends StatefulWidget {
   const PlaceDetailScreen({super.key, required this.placeId});
@@ -54,8 +55,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No tienes ninguna aplicación de mapas instalada.'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.noMapsInstalled),
         ),
       );
     }
@@ -63,6 +64,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
@@ -84,10 +86,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             if (state.status == PlaceDetailStatus.unauthenticated) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    state.errorMessage ??
-                        'Debes iniciar sesión para realizar esta acción.',
-                  ),
+                  content: Text(state.errorMessage ?? l10n.signInRequired),
                   backgroundColor: Colors.orange,
                 ),
               );
@@ -96,15 +95,13 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             if (state.status == PlaceDetailStatus.success) {
               _commentController.clear();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Comentario añadido')),
+                SnackBar(content: Text(l10n.commentAdded)),
               );
             }
             if (state.status == PlaceDetailStatus.error) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(
-                    state.errorMessage ?? 'Error al añadir comentario',
-                  ),
+                  content: Text(state.errorMessage ?? l10n.commentError),
                 ),
               );
             }
@@ -119,7 +116,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          state.errorMessage ?? 'Error al cargar el lugar',
+                          state.errorMessage ?? l10n.loadPlaceError,
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
@@ -127,7 +124,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                           onPressed: () => context.read<PlaceDetailBloc>().add(
                                 ObservePlaceDetailIntent(widget.placeId),
                               ),
-                          child: const Text('Reintentar'),
+                          child: Text(l10n.retryButton),
                         ),
                       ],
                     ),
@@ -175,6 +172,8 @@ class _PlaceDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).languageCode;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
@@ -199,7 +198,7 @@ class _PlaceDetailBody extends StatelessWidget {
                             ? Icons.bookmark
                             : Icons.bookmark_border,
                       ),
-                      label: Text(state.isSaved ? 'Guardado' : 'Guardar'),
+                      label: Text(state.isSaved ? l10n.savedButton : l10n.saveButton),
                     );
                   },
                 ),
@@ -209,7 +208,7 @@ class _PlaceDetailBody extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: onNavigateTap,
                   icon: const Icon(Icons.directions),
-                  label: const Text('Ir'),
+                  label: Text(l10n.navigateButton),
                 ),
               ),
             ],
@@ -227,7 +226,7 @@ class _PlaceDetailBody extends StatelessWidget {
                       'assets/icons/locations/ic_location_user.png',
                     ),
                     title: Text(comment.comment),
-                    subtitle: Text(comment.createdAt.toDisplayFormat()),
+                    subtitle: Text(comment.createdAt.toDisplayFormat(l10n.commentDateFormat, locale)),
                   );
                 },
               ),
@@ -238,7 +237,7 @@ class _PlaceDetailBody extends StatelessWidget {
               Expanded(
                 child: DarkTextField(
                   label: null,
-                  hint: 'Escribe un comentario...',
+                  hint: l10n.commentHint,
                   controller: commentController,
                   suffixIcon: isSubmittingComment
                       ? const SizedBox(
@@ -312,7 +311,7 @@ class _MapPickerSheet extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'Abrir con',
+                  AppLocalizations.of(context)!.openWith,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
