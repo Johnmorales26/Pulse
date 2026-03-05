@@ -30,3 +30,9 @@ class SetErrorIntent extends PlaceDetailIntent {
 
   SetErrorIntent(this.message);
 }
+
+class ToggleSavePlaceIntent extends PlaceDetailIntent {
+  final String placeId;
+
+  ToggleSavePlaceIntent(this.placeId);
+}

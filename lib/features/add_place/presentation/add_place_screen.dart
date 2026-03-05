@@ -5,6 +5,7 @@ import 'package:pulse/features/add_place/presentation/bloc/add_place_bloc.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_intent.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_state.dart';
 import 'package:pulse/features/map/domain/model/place_icon.dart';
+import 'package:pulse/features/widgets/category_tile.dart';
 import 'package:pulse/features/widgets/dark_text_field.dart';
 
 class AddPlaceScreen extends StatefulWidget {
@@ -116,7 +117,7 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         const SizedBox(height: 4.0),
-                        _CategoryTile(
+                        CategoryTile(
                           selected: state.selectedCategory,
                           onTap: () => _showCategoryBottomSheet(context),
                         ),
@@ -146,40 +147,6 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Widgets privados
-// ---------------------------------------------------------------------------
-
-class _CategoryTile extends StatelessWidget {
-  const _CategoryTile({required this.selected, required this.onTap});
-
-  final PlaceIcon? selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xff2a2a2a),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: ListTile(
-          leading: Image.asset(
-            selected?.asset ?? 'assets/icons/locations/ic_location_all.png',
-            width: 36.0,
-            height: 36.0,
-          ),
-          title: Text(selected?.label ?? 'Select Category'),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        ),
       ),
     );
   }

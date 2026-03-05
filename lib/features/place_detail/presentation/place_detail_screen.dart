@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:map_launcher/map_launcher.dart';
+import 'package:pulse/core/di/injection.dart';
+import 'package:pulse/core/utils/launch_map_use_case.dart';
 import 'package:pulse/core/utils/date_time_extensions.dart';
 import 'package:pulse/features/map/domain/model/place_comments.dart';
 import 'package:pulse/features/map/domain/model/place_location.dart';
@@ -24,7 +27,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   @override
   void initState() {
     super.initState();
-    // AQUÍ: Disparamos el intent inicial; el BLoC se suscribe al Stream de Firebase
     context.read<PlaceDetailBloc>().add(
       ObservePlaceDetailIntent(widget.placeId),
     );
@@ -36,11 +38,33 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     super.dispose();
   }
 
+  Future<void> _onNavigateTap(PlaceLocation place) async {
+    try {
+      final maps = await sl<LaunchMapUseCase>()();
+      if (!mounted) return;
+      showModalBottomSheet(
+        context: context,
+        builder: (_) => _MapPickerSheet(
+          maps: maps,
+          latitude: place.latitude,
+          longitude: place.longitude,
+          placeName: place.name,
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No tienes ninguna aplicación de mapas instalada.'),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // BlocBuilder aislado: solo reconstruye el título, no el Scaffold entero.
         title: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
           buildWhen: (prev, curr) => prev.place?.name != curr.place?.name,
           builder: (context, state) {
@@ -52,18 +76,17 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
       body: SafeArea(
         child: BlocConsumer<PlaceDetailBloc, PlaceDetailState>(
           listenWhen: (previous, current) =>
-              // Captura la respuesta tras enviar un comentario (loading → otro).
               (previous.status == PlaceDetailStatus.loading &&
                   previous.place != null &&
                   current.status != PlaceDetailStatus.loading) ||
-              // Captura el rechazo por sesión sin necesidad de pasar por loading.
               current.status == PlaceDetailStatus.unauthenticated,
           listener: (context, state) {
             if (state.status == PlaceDetailStatus.unauthenticated) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    state.errorMessage ?? 'Debes iniciar sesión para realizar esta acción.',
+                    state.errorMessage ??
+                        'Debes iniciar sesión para realizar esta acción.',
                   ),
                   backgroundColor: Colors.orange,
                 ),
@@ -87,10 +110,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
             }
           },
           builder: (context, state) {
-            // ESTADO initial / loading sin place → carga inicial del lugar
             if (state.place == null) {
               if (state.status == PlaceDetailStatus.error) {
-                // ESTADO error en la carga inicial — no hay place que mostrar
                 return Center(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -104,8 +125,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => context.read<PlaceDetailBloc>().add(
-                            ObservePlaceDetailIntent(widget.placeId),
-                          ),
+                                ObservePlaceDetailIntent(widget.placeId),
+                              ),
                           child: const Text('Reintentar'),
                         ),
                       ],
@@ -113,11 +134,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                   ),
                 );
               }
-              // ESTADO loading inicial → spinner
               return const Center(child: CircularProgressIndicator());
             }
 
-            // AQUÍ: Consumiendo el estado exitoso — extraemos el place del estado
             final PlaceLocation place = state.place!;
             final bool isSubmittingComment =
                 state.status == PlaceDetailStatus.loading;
@@ -128,6 +147,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               commentController: _commentController,
               isSubmittingComment: isSubmittingComment,
               placeId: widget.placeId,
+              onNavigateTap: () => _onNavigateTap(place),
             );
           },
         ),
@@ -136,8 +156,6 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
   }
 }
 
-/// Widget interno que renderiza el contenido visual una vez que [place] está disponible.
-/// No modifica ningún componente de diseño existente.
 class _PlaceDetailBody extends StatelessWidget {
   const _PlaceDetailBody({
     required this.place,
@@ -145,6 +163,7 @@ class _PlaceDetailBody extends StatelessWidget {
     required this.commentController,
     required this.isSubmittingComment,
     required this.placeId,
+    required this.onNavigateTap,
   });
 
   final PlaceLocation place;
@@ -152,6 +171,7 @@ class _PlaceDetailBody extends StatelessWidget {
   final TextEditingController commentController;
   final bool isSubmittingComment;
   final String placeId;
+  final VoidCallback onNavigateTap;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +182,38 @@ class _PlaceDetailBody extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ImageCarousel(photos: place.photos),
+          const SizedBox(height: 12.0),
+          // Fila de acciones principales: Guardar e Ir
+          Row(
+            children: [
+              Expanded(
+                child: BlocBuilder<PlaceDetailBloc, PlaceDetailState>(
+                  buildWhen: (prev, curr) => prev.isSaved != curr.isSaved,
+                  builder: (context, state) {
+                    return OutlinedButton.icon(
+                      onPressed: () => context.read<PlaceDetailBloc>().add(
+                            ToggleSavePlaceIntent(placeId),
+                          ),
+                      icon: Icon(
+                        state.isSaved
+                            ? Icons.bookmark
+                            : Icons.bookmark_border,
+                      ),
+                      label: Text(state.isSaved ? 'Guardado' : 'Guardar'),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: onNavigateTap,
+                  icon: const Icon(Icons.directions),
+                  label: const Text('Ir'),
+                ),
+              ),
+            ],
+          ),
           const SizedBox(height: 8.0),
           Expanded(
             child: SizedBox(
@@ -201,11 +253,11 @@ class _PlaceDetailBody extends StatelessWidget {
                           onPressed: () {
                             if (commentController.text.isNotEmpty) {
                               context.read<PlaceDetailBloc>().add(
-                                AddCommentIntent(
-                                  placeId,
-                                  commentController.text,
-                                ),
-                              );
+                                    AddCommentIntent(
+                                      placeId,
+                                      commentController.text,
+                                    ),
+                                  );
                             }
                           },
                           icon: const Icon(Icons.send),
@@ -215,6 +267,76 @@ class _PlaceDetailBody extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// BottomSheet que muestra las apps de mapas instaladas y lanza la seleccionada.
+class _MapPickerSheet extends StatelessWidget {
+  const _MapPickerSheet({
+    required this.maps,
+    required this.latitude,
+    required this.longitude,
+    required this.placeName,
+  });
+
+  final List<AvailableMap> maps;
+  final double latitude;
+  final double longitude;
+  final String placeName;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Drag handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Abrir con',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+            ...maps.map(
+              (map) => ListTile(
+                leading: Image(
+                  image: AssetImage(map.icon, package: 'map_launcher'),
+                  width: 30,
+                  height: 30,
+                  errorBuilder: (_, _, _) => const Icon(Icons.map_outlined),
+                ),
+                title: Text(map.mapName),
+                onTap: () async {
+                  Navigator.of(context).pop();
+                  await map.showDirections(
+                    destination: Coords(latitude, longitude),
+                    destinationTitle: placeName,
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

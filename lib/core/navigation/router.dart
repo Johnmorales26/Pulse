@@ -11,7 +11,8 @@ import 'package:pulse/features/auth/presentation/auth_bloc.dart';
 import 'package:pulse/features/auth/presentation/login_screen.dart';
 import 'package:pulse/features/auth/presentation/sign_up_screen.dart';
 import 'package:pulse/features/map/presentation/map_screen.dart';
-import 'package:pulse/features/profile/presentation/profile_bloc.dart';
+import 'package:pulse/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:pulse/features/profile/presentation/bloc/profile_intent.dart';
 import 'package:pulse/features/profile/presentation/profile_screen.dart';
 import 'package:pulse/features/place_detail/presentation/bloc/place_detail_bloc.dart';
 import 'package:pulse/features/place_detail/presentation/place_detail_screen.dart';
@@ -90,7 +91,7 @@ class AppRouter {
           return buildElegantTransitionPage(
             state: state,
             child: BlocProvider(
-              create: (_) => sl<ProfileBloc>(),
+              create: (_) => sl<ProfileBloc>()..add(LoadProfileIntent()),
               child: const ProfileScreen(),
             ),
           );
