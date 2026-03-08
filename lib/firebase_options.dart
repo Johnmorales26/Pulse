@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyDv9iOml85_9sxZbMXBsZGz8ZwZ0VRRZAg',
-    appId: '1:839277350037:android:ac47fd7bcc54760141df9c',
+    appId: '1:839277350037:android:b0a088ea3d7c535341df9c',
     messagingSenderId: '839277350037',
     projectId: 'pulse-e07c8',
     storageBucket: 'pulse-e07c8.firebasestorage.app',
@@ -59,11 +59,11 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyC3N_S-ks3HzHYSSHD0xd9mdIrdrkhldJg',
-    appId: '1:839277350037:ios:1f4324bc52b7503741df9c',
+    appId: '1:839277350037:ios:00c4bfcd583daa0f41df9c',
     messagingSenderId: '839277350037',
     projectId: 'pulse-e07c8',
     storageBucket: 'pulse-e07c8.firebasestorage.app',
-    iosBundleId: 'com.pulse.ios',
+    iosBundleId: 'io.pulse.ios',
   );
 
 }

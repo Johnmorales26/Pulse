@@ -1,0 +1,2 @@
+#include "../Runner/secrets.xcconfig"
+#include "Generated.xcconfig"

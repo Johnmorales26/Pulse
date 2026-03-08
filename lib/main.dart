@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:pulse/l10n/app_localizations.dart';
 import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router.dart';
@@ -8,13 +9,20 @@ import 'package:pulse/core/theme/typography.dart';
 import 'package:pulse/firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // Preserva el splash nativo mientras completamos la inicialización asíncrona.
+  // Sin esto, el splash desaparece en cuanto el engine de Flutter está listo,
+  // antes de que Firebase y las dependencias terminen de cargar.
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   await initDependencies();
+
+  // Libera el splash — a partir de aquí se renderiza el primer frame de Flutter.
+  FlutterNativeSplash.remove();
 
   runApp(const MyApp());
 }

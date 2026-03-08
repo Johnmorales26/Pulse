@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.pulse.ios</string>
+	<string>io.pulse.ios</string>
 	<key>PROJECT_ID</key>
 	<string>pulse-e07c8</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:839277350037:ios:1f4324bc52b7503741df9c</string>
+	<string>1:839277350037:ios:00c4bfcd583daa0f41df9c</string>
 </dict>
 </plist>

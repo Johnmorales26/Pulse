@@ -1,0 +1,45 @@
+flutter_native_splash:
+  # ---------------------------------------------------------------------------
+  # COLOR DE FONDO
+  # Mismo valor que el surface color del dark theme de Material 3.
+  # Elimina el flash blanco en todos los dispositivos pre-Android 12.
+  # ---------------------------------------------------------------------------
+  color: "#0D0D0D"
+
+  # ---------------------------------------------------------------------------
+  # LOGO CENTRADO
+  # Debe ser un PNG con fondo TRANSPARENTE.
+  # Reemplaza este path cuando tengas la versión del logo con alpha.
+  # ---------------------------------------------------------------------------
+  image: assets/icons/locations/ic_location_user.png
+
+  # ---------------------------------------------------------------------------
+  # DARK MODE EXPLÍCITO
+  # Cuando el OS del dispositivo está en modo oscuro, usa estos valores.
+  # Al ser la app dark-only, ambos valores son iguales.
+  # ---------------------------------------------------------------------------
+  color_dark: "#0D0D0D"
+  image_dark: assets/icons/locations/ic_location_user.png
+
+  # ---------------------------------------------------------------------------
+  # ANDROID 12+ — Splash Screen API nativa
+  # Google impone que el ícono ocupe máximo el 33% del área de pantalla.
+  # El paquete lo escala automáticamente, pero declaramos la sección para
+  # controlar el color de fondo del ícono adaptativo (icon_background_color).
+  # ---------------------------------------------------------------------------
+  android_12:
+    color: "#0D0D0D"
+    image: assets/icons/locations/ic_location_user.png
+    icon_background_color: "#0D0D0D"
+    color_dark: "#0D0D0D"
+    image_dark: assets/icons/locations/ic_location_user.png
+    icon_background_color_dark: "#0D0D0D"
+
+  # ---------------------------------------------------------------------------
+  # OPCIONES DE PLATAFORMA
+  # ---------------------------------------------------------------------------
+  android: true
+  ios: true
+
+  # Deshabilita el splash en web (no aplica a tu caso)
+  web: false
