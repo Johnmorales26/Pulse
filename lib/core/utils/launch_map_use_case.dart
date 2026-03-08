@@ -1,7 +1,5 @@
 import 'package:map_launcher/map_launcher.dart';
 
-/// Obtiene la lista de apps de mapas instaladas en el dispositivo.
-/// Lanza [StateError] si no hay ninguna instalada.
 class LaunchMapUseCase {
   const LaunchMapUseCase();
 

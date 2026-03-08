@@ -26,7 +26,6 @@ class AddPlaceBloc extends Bloc<AddPlaceIntent, AddPlaceState> {
     SubmitPlaceIntent intent,
     Emitter<AddPlaceState> emit,
   ) async {
-    // 1. Validación de sesión: primer rechazo antes de tocar datos o Firebase.
     final uid = getCurrentUserId();
     if (uid == null) {
       emit(state.copyWith(
@@ -36,7 +35,6 @@ class AddPlaceBloc extends Bloc<AddPlaceIntent, AddPlaceState> {
       return;
     }
 
-    // 2. Validación de formulario en el BLoC: la UI permanece libre de lógica.
     if (intent.name.trim().isEmpty ||
         intent.description.trim().isEmpty ||
         state.selectedCategory == null) {

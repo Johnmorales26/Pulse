@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'package:pulse/features/auth/domain/usecases/sign_in_use_case.dart';
 import 'package:pulse/features/auth/domain/usecases/sign_up_use_case.dart';
 
@@ -10,10 +9,8 @@ import 'auth_state.dart';
 class AuthBloc extends Bloc<AuthIntent, AuthState> {
   final SignInUseCase _signInUseCase;
   final SignUpUseCase _signUpUseCase;
-  final Logger _logger;
 
-  AuthBloc(this._signInUseCase, this._signUpUseCase, this._logger)
-    : super(AuthInitial()) {
+  AuthBloc(this._signInUseCase, this._signUpUseCase) : super(AuthInitial()) {
     on<SignInIntent>(_onSignIn);
     on<SignUpIntent>(_onSignUp);
   }
@@ -29,7 +26,6 @@ class AuthBloc extends Bloc<AuthIntent, AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
     } catch (e) {
-      _logger.e('Error inesperado en sign-in: $e');
       emit(AuthError('unknownError'));
     }
   }
@@ -38,7 +34,6 @@ class AuthBloc extends Bloc<AuthIntent, AuthState> {
     SignUpIntent intent,
     Emitter<AuthState> emit,
   ) async {
-    // Validaciones locales — se resuelven antes de hacer cualquier llamada de red.
     if (intent.username.trim().isEmpty) {
       emit(AuthError('authErrorEmptyUsername'));
       return;
@@ -67,13 +62,10 @@ class AuthBloc extends Bloc<AuthIntent, AuthState> {
     } on FirebaseAuthException catch (e) {
       emit(AuthError(_mapFirebaseError(e)));
     } catch (e) {
-      _logger.e('Error inesperado en sign-up: $e');
       emit(AuthError('unknownError'));
     }
   }
 
-  // Devuelve el nombre de la clave ARB, no un string traducido.
-  // La UI es responsable de convertirlo al idioma del usuario.
   String _mapFirebaseError(FirebaseAuthException e) {
     return switch (e.code) {
       'invalid-email' => 'authErrorInvalidEmail',

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 import 'package:pulse/core/auth/domain/usecases/get_current_user_id_use_case.dart';
 import 'package:pulse/features/auth/domain/repository/user_auth_repository.dart';
 import 'package:pulse/features/profile/data/repository/profile_repository_impl.dart';
@@ -35,7 +34,6 @@ void initProfileModule() {
       sl<GetUserProfileUseCase>(),
       sl<UpdateProfilePictureUseCase>(),
       sl<GetCurrentUserIdUseCase>(),
-      sl<Logger>(),
     ),
   );
 }

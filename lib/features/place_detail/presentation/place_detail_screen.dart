@@ -182,7 +182,6 @@ class _PlaceDetailBody extends StatelessWidget {
         children: [
           ImageCarousel(photos: place.photos),
           const SizedBox(height: 12.0),
-          // Fila de acciones principales: Guardar e Ir
           Row(
             children: [
               Expanded(
@@ -271,7 +270,6 @@ class _PlaceDetailBody extends StatelessWidget {
   }
 }
 
-/// BottomSheet que muestra las apps de mapas instaladas y lanza la seleccionada.
 class _MapPickerSheet extends StatelessWidget {
   const _MapPickerSheet({
     required this.maps,
@@ -293,7 +291,6 @@ class _MapPickerSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag handle
             Container(
               width: 40,
               height: 4,

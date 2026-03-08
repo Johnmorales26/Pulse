@@ -25,8 +25,6 @@ class ProfileRepositoryImpl implements ProfileRepository {
 
   @override
   Future<void> updateProfilePicture(String uid, File imageFile) async {
-    // Usa el UID como nombre de archivo para garantizar unicidad por usuario
-    // y permitir la sobreescritura controlada en futuras actualizaciones.
     final storageRef = _storage.ref().child('profile_pictures/$uid.jpg');
 
     await storageRef.putFile(imageFile);

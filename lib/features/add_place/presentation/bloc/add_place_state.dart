@@ -2,8 +2,6 @@ import 'package:pulse/features/map/domain/model/place_icon.dart';
 
 enum AddPlaceStatus { idle, loading, validationError, success, failure, unauthenticated }
 
-/// Estado único con copyWith para preservar selectedCategory a través
-/// de todas las transiciones (validación, carga, éxito, error).
 class AddPlaceState {
   final PlaceIcon? selectedCategory;
   final AddPlaceStatus status;

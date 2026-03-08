@@ -9,8 +9,6 @@ class PlaceMapper {
   static PlaceLocation fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
 
-    // Los campos photos, location y rating son mapas anidados en Firestore,
-    // no campos planos en la raíz del documento.
     final locationMap =
         data[Constants.DATA_LOCATION] as Map<String, dynamic>? ?? {};
     final photosMap =

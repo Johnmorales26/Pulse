@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
-import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/features/map/domain/model/place_icon.dart';
 import 'package:pulse/features/map/domain/model/place_location.dart';
 import 'package:pulse/features/map/domain/model/user_location.dart';
@@ -13,7 +11,6 @@ import 'package:pulse/features/map/presentation/map_state.dart';
 // ignore: must_be_immutable
 class MapWidgetSuccess extends StatelessWidget
     implements OnPointAnnotationClickListener {
-  final Logger logger = sl<Logger>();
   final UserLocation? userLocation;
   final List<PlaceLocation> locations;
   MapboxMap? _mapboxMap;
@@ -83,7 +80,7 @@ class MapWidgetSuccess extends StatelessWidget
         );
         _annotationMap[annotation.id] = loc;
       } catch (e) {
-        logger.e('Log of Manager -> Error to add pin of ${loc.name}: $e');
+        // ignore: empty_catches
       }
     }
   }
@@ -105,7 +102,7 @@ class MapWidgetSuccess extends StatelessWidget
         await _pointAnnotationManager!.update(_userAnnotation!);
       }
     } catch (e) {
-      logger.e('Error to paint location from user');
+      // ignore: empty_catches
     }
   }
 
@@ -161,9 +158,6 @@ class MapWidgetSuccess extends StatelessWidget
         onMapCreated: _onMapCreated,
         cameraOptions: cameraOptions,
         styleUri: MapboxStyles.DARK,
-        // Detecta el tap sostenido y extrae las coordenadas geográficas.
-        // Los tipos de Mapbox (Position) no salen de este widget: hacia afuera
-        // solo viajan doubles primitivos a través del callback onLongPress.
         onLongTapListener: (MapContentGestureContext ctx) {
           final coords = ctx.point.coordinates;
           onLongPress(coords.lat.toDouble(), coords.lng.toDouble());

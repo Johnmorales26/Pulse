@@ -33,15 +33,13 @@ class PlaceDetailBloc extends Bloc<PlaceDetailIntent, PlaceDetailState> {
       emit(state.copyWith(status: PlaceDetailStatus.loading));
       await _placeSubscription?.cancel();
 
-      // Carga el estado inicial de guardado de forma concurrente con el stream.
-      // Si el usuario no tiene sesión, isSaved queda en false por defecto.
       final uid = getCurrentUserId();
       if (uid != null) {
         try {
           final saved = await checkIfPlaceSavedUseCase(uid, intent.placeId);
           emit(state.copyWith(isSaved: saved));
         } catch (_) {
-          // No-crítico: el ícono mostrará estado "no guardado" como fallback.
+          // ignore: empty_catches
         }
       }
 
@@ -52,7 +50,6 @@ class PlaceDetailBloc extends Bloc<PlaceDetailIntent, PlaceDetailState> {
     });
 
     on<UpdatePlaceDetailIntent>((intent, emit) {
-      // isSaved se preserva en copyWith (usa this.isSaved si no se pasa).
       emit(state.copyWith(
         status: PlaceDetailStatus.success,
         place: intent.place,
@@ -79,7 +76,6 @@ class PlaceDetailBloc extends Bloc<PlaceDetailIntent, PlaceDetailState> {
 
       final previousIsSaved = state.isSaved;
 
-      // Actualización optimista: el ícono cambia de inmediato, sin esperar a Firestore.
       emit(state.copyWith(isSaved: !previousIsSaved));
 
       try {
@@ -89,7 +85,6 @@ class PlaceDetailBloc extends Bloc<PlaceDetailIntent, PlaceDetailState> {
           isCurrentlySaved: previousIsSaved,
         );
       } catch (e) {
-        // Reversión: Firestore falló, se restaura el estado anterior.
         emit(state.copyWith(
           isSaved: previousIsSaved,
           status: PlaceDetailStatus.error,
@@ -99,7 +94,6 @@ class PlaceDetailBloc extends Bloc<PlaceDetailIntent, PlaceDetailState> {
     });
 
     on<AddCommentIntent>((intent, emit) async {
-      // --- Validación de sesión en el BLoC (MVI): rechazo temprano sin tocar Firebase ---
       final uid = getCurrentUserId();
       if (uid == null) {
         emit(state.copyWith(
@@ -113,7 +107,6 @@ class PlaceDetailBloc extends Bloc<PlaceDetailIntent, PlaceDetailState> {
       try {
         await addCommentUseCase(intent.placeId, intent.comment);
 
-        // Actualización optimista local con el uid real del usuario.
         final newComment = PlaceComments(
           comment: intent.comment,
           createdBy: uid,

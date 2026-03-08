@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:logger/logger.dart';
 import 'package:pulse/core/auth/domain/exceptions/unauthenticated_exception.dart';
 import 'package:pulse/core/auth/domain/usecases/get_current_user_id_use_case.dart';
 import 'package:pulse/features/map/domain/model/place_location.dart';
@@ -8,10 +7,9 @@ import '../../domain/repositories/place_repository.dart';
 
 class PlaceRepositoryImpl implements PlaceRepository {
   final FirebaseFirestore _firestore;
-  final Logger logger;
   final GetCurrentUserIdUseCase _getCurrentUserId;
 
-  PlaceRepositoryImpl(this._firestore, this.logger, this._getCurrentUserId);
+  PlaceRepositoryImpl(this._firestore, this._getCurrentUserId);
 
   @override
   Stream<PlaceLocation> getPlaceStream(String placeId) {
@@ -36,8 +34,6 @@ class PlaceRepositoryImpl implements PlaceRepository {
     required bool isCurrentlySaved,
   }) async {
     final userRef = _firestore.collection('users').doc(uid);
-    // arrayUnion/arrayRemove operan atómicamente en Firestore — nunca se
-    // descarga el arreglo completo a memoria, previniendo condiciones de carrera.
     if (isCurrentlySaved) {
       await userRef.update({
         'savedPlaces': FieldValue.arrayRemove([placeId]),
@@ -56,7 +52,6 @@ class PlaceRepositoryImpl implements PlaceRepository {
 
     if (savedIds.isEmpty) return [];
 
-    // Firestore whereIn limit is 30 items per query — chunk to handle larger lists.
     final places = <PlaceLocation>[];
     for (var i = 0; i < savedIds.length; i += 30) {
       final chunk = savedIds.sublist(i, (i + 30).clamp(0, savedIds.length));
@@ -72,24 +67,17 @@ class PlaceRepositoryImpl implements PlaceRepository {
 
   @override
   Future<void> addComment(String placeId, String comment) async {
-    // Defensa en profundidad: aunque el BLoC ya validó, el repositorio
-    // vuelve a comprobar antes de escribir en Firestore.
     final uid = _getCurrentUserId();
     if (uid == null) throw const UnauthenticatedException();
 
-    try {
-      await _firestore.collection('places').doc(placeId).update({
-        'comments': FieldValue.arrayUnion([
-          {
-            'comment': comment,
-            'createdBy': uid,
-            'createdAt': Timestamp.now(),
-          },
-        ]),
-      });
-    } catch (e) {
-      logger.e(e);
-      throw Exception('Error al agregar el comentario: $e');
-    }
+    await _firestore.collection('places').doc(placeId).update({
+      'comments': FieldValue.arrayUnion([
+        {
+          'comment': comment,
+          'createdBy': uid,
+          'createdAt': Timestamp.now(),
+        },
+      ]),
+    });
   }
 }

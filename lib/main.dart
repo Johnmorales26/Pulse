@@ -9,9 +9,6 @@ import 'package:pulse/core/theme/typography.dart';
 import 'package:pulse/firebase_options.dart';
 
 void main() async {
-  // Preserva el splash nativo mientras completamos la inicialización asíncrona.
-  // Sin esto, el splash desaparece en cuanto el engine de Flutter está listo,
-  // antes de que Firebase y las dependencias terminen de cargar.
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
@@ -21,7 +18,6 @@ void main() async {
 
   await initDependencies();
 
-  // Libera el splash — a partir de aquí se renderiza el primer frame de Flutter.
   FlutterNativeSplash.remove();
 
   runApp(const MyApp());
@@ -40,12 +36,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: theme.dark(),
       routerConfig: AppRouter.router,
-      // i18n: Flutter delega la resolución del idioma al OS del dispositivo.
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      // Resuelve el idioma del dispositivo a uno de los locales soportados.
-      // Cubre variantes regionales (en_US, es_419, en_GB) que el algoritmo
-      // por defecto de Flutter no siempre mapea correctamente.
       localeResolutionCallback: (locale, supportedLocales) {
         if (locale != null) {
           for (final supported in supportedLocales) {
@@ -54,7 +46,6 @@ class MyApp extends StatelessWidget {
             }
           }
         }
-        // El OS está en un idioma no soportado → fallback a inglés.
         return const Locale('en');
       },
     );

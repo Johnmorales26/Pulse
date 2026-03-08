@@ -47,9 +47,6 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.addPlaceTitle)),
-      // BlocConsumer:
-      //   • listener → efectos de lado: SnackBar de error y pop en éxito.
-      //   • builder  → reconstruye solo cuando cambia selectedCategory o status.
       body: BlocConsumer<AddPlaceBloc, AddPlaceState>(
         listenWhen: (prev, curr) => prev.status != curr.status,
         listener: (context, state) {
@@ -133,7 +130,6 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 24.0),
                   child: FloatingActionButton.extended(
-                    // Deshabilitado durante la carga para evitar doble envío
                     onPressed: isLoading ? null : () => _onSave(context),
                     icon: isLoading
                         ? const SizedBox(
@@ -157,13 +153,6 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Bottom sheet
-// ---------------------------------------------------------------------------
-
-/// Muestra el modal con la lista de categorías registrables.
-/// Recibe el [context] de la pantalla (que tiene el BLoC en su árbol)
-/// para despachar [SelectCategoryIntent] correctamente.
 void _showCategoryBottomSheet(BuildContext context) {
   final categories = PlaceIcon.values
       .where((c) => c != PlaceIcon.all && c != PlaceIcon.unknown)
@@ -222,8 +211,6 @@ void _showCategoryBottomSheet(BuildContext context) {
                     ),
                     title: Text(category.label),
                     onTap: () {
-                      // Usamos el [context] externo (pantalla) que tiene
-                      // el BLoC. El [sheetContext] del overlay no lo tiene.
                       context.read<AddPlaceBloc>().add(
                         SelectCategoryIntent(category),
                       );

@@ -49,8 +49,6 @@ class MapScreen extends StatelessWidget {
                             SelectMapLocationIntent(location),
                           );
                         },
-                        // Recibe las coordenadas ya limpias (solo doubles) y
-                        // navega a la pantalla de creación de lugar.
                         onLongPress: (lat, lng) {
                           innerContext.pushNamed(
                             RouterNames.addPlace,
@@ -89,8 +87,6 @@ class MapScreen extends StatelessWidget {
                         message: l10n.profileTooltip,
                         child: InkWell(
                           onTap: () {
-                            // Verificación sincrónica: si hay sesión activa navega
-                            // al perfil, si no al login — sin necesidad de BLoC global.
                             final uid = sl<GetCurrentUserIdUseCase>()();
                             if (uid != null) {
                               context.pushNamed(RouterNames.profile);

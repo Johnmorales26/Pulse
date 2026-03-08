@@ -11,12 +11,9 @@ class AddPlaceDatasource {
   AddPlaceDatasource(this.firestore, this._getCurrentUserId);
 
   Future<void> addPlace(NewPlace place) async {
-    // Defensa en profundidad: el BLoC ya rechazó el intent, pero el datasource
-    // vuelve a verificar antes de escribir en Firestore.
     final uid = _getCurrentUserId();
     if (uid == null) throw const UnauthenticatedException();
 
-    // Construimos el payload con la estructura EXACTA de Firestore.
     final payload = {
       Constants.DATA_NAME: place.name,
       Constants.DATA_DESCRIPTION: place.description,

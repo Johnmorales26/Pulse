@@ -104,12 +104,10 @@ class ProfileScreen extends StatelessWidget {
         body: BlocBuilder<ProfileBloc, ProfileState>(
           builder: (context, state) {
             final l10n = AppLocalizations.of(context)!;
-            // Carga inicial / cierre de sesión en progreso
             if (state is ProfileInitial || state is ProfileLoading) {
               return const Center(child: CircularProgressIndicator());
             }
 
-            // Extrae el perfil ya sea del estado cargado o del estado subiendo
             UserProfile? profile;
             bool isPhotoUploading = false;
 
@@ -134,7 +132,6 @@ class ProfileScreen extends StatelessWidget {
                         children: [
                           const SizedBox(height: 16),
 
-                          // Avatar con overlay de edición y feedback de carga
                           GestureDetector(
                             onTap: isPhotoUploading
                                 ? null
@@ -197,7 +194,6 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
 
-                    // Botón deshabilitado mientras hay cualquier operación activa
                     ElevatedButton(
                       onPressed: isPhotoUploading
                           ? null
@@ -248,7 +244,6 @@ class _SavedPlacesSheet extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Drag handle
           Container(
             margin: const EdgeInsets.symmetric(vertical: 12),
             width: 40,

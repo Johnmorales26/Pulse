@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'package:pulse/features/map/domain/usecases/get_user_location_use_case.dart';
 
 import '../domain/usecases/get_map_location_use_case.dart';
@@ -9,9 +8,8 @@ import 'map_state.dart';
 class MapBloc extends Bloc<MapIntent, MapState> {
   final GetMapLocationsUseCase getMapLocationsUseCase;
   final GetUserLocationUseCase getUserLocationUseCase;
-  final Logger logger;
 
-  MapBloc(this.getMapLocationsUseCase, this.getUserLocationUseCase, this.logger)
+  MapBloc(this.getMapLocationsUseCase, this.getUserLocationUseCase)
     : super(MapInitial()) {
     on<FetchMapLocationsIntent>(_onFetchLocations);
     on<SelectMapLocationIntent>(_onSelectLocation);
@@ -26,12 +24,9 @@ class MapBloc extends Bloc<MapIntent, MapState> {
     emit(MapLoading());
     try {
       final locations = await getMapLocationsUseCase();
-
       emit(MapSuccess(locations: locations));
-
       add(FetchUserLocationIntent());
     } catch (e) {
-      logger.d('Log de Manager -> Error crítico al consultar Firebase: $e');
       emit(MapError(e.toString()));
     }
   }
@@ -71,7 +66,7 @@ class MapBloc extends Bloc<MapIntent, MapState> {
           ),
         );
       } catch (e) {
-        logger.e('Error get location: $e');
+        // ignore: empty_catches
       }
     }
   }

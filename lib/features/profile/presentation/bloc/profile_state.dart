@@ -12,8 +12,6 @@ class ProfileLoaded extends ProfileState {
   ProfileLoaded(this.profile);
 }
 
-// Extiende la idea de "cargado" pero con la foto subiendo.
-// Mantiene los datos del perfil visibles mientras se actualiza el avatar.
 class ProfilePictureUploading extends ProfileState {
   final UserProfile profile;
 

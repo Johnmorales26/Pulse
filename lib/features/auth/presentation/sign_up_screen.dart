@@ -23,7 +23,6 @@ class SignUpScreen extends StatelessWidget {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthSuccess) {
-          // Reemplaza toda la pila: el usuario ya está autenticado.
           context.goNamed('map');
         } else if (state is AuthError) {
           final l10n = AppLocalizations.of(context)!;
@@ -40,8 +39,6 @@ class SignUpScreen extends StatelessWidget {
         final l10n = AppLocalizations.of(context)!;
 
         return Scaffold(
-          // BOTÓN DE RETROCESO: salta directamente al mapa ignorando
-          // toda la pila auth, ya que sign_up puede estar 2 niveles arriba.
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.close),

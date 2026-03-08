@@ -31,8 +31,6 @@ class AppRouter {
         path: '/add-place',
         name: RouterNames.addPlace,
         pageBuilder: (context, state) {
-          // Las coordenadas llegan como un record Dart (lat, lng) en extra,
-          // evitando el uso de Map<String, dynamic> y manteniendo tipado fuerte.
           final (double lat, double lng) = state.extra! as (double, double);
           return buildElegantTransitionPage(
             state: state,

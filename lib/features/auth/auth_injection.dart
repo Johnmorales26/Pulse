@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
 import 'package:pulse/features/auth/data/repository/user_auth_repository_impl.dart';
 import 'package:pulse/features/auth/domain/repository/user_auth_repository.dart';
 import 'package:pulse/features/auth/domain/usecases/sign_in_use_case.dart';
@@ -22,7 +21,6 @@ void initAuthModule() {
     () => AuthBloc(
       sl<SignInUseCase>(),
       sl<SignUpUseCase>(),
-      sl<Logger>(),
     ),
   );
 }

@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:logger/web.dart';
 import 'package:pulse/core/auth/data/repository/auth_repository_impl.dart';
 import 'package:pulse/core/auth/domain/repository/auth_repository.dart';
 import 'package:pulse/core/auth/domain/usecases/get_current_user_id_use_case.dart';
@@ -25,19 +23,6 @@ import 'package:pulse/features/profile/profile_injection.dart';
 final sl = GetIt.instance;
 
 Future<void> initDependencies() async {
-  sl.registerLazySingleton<Logger>(
-    () => Logger(
-      level: kReleaseMode ? Level.off : Level.debug,
-      printer: PrettyPrinter(
-        methodCount: 0,
-        errorMethodCount: 5,
-        lineLength: 80,
-        colors: true,
-        printEmojis: true,
-      ),
-    ),
-  );
-
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton(() => FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseStorage.instance);
@@ -69,7 +54,7 @@ Future<void> initDependencies() async {
     () => GetUserLocationUseCase(sl()),
   );
 
-  sl.registerFactory<MapBloc>(() => MapBloc(sl(), sl(), sl()));
+  sl.registerFactory<MapBloc>(() => MapBloc(sl(), sl()));
 
   initPlaceDetailModule();
   initAddPlaceModule();

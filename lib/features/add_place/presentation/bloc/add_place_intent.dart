@@ -7,8 +7,6 @@ class SelectCategoryIntent extends AddPlaceIntent {
   SelectCategoryIntent(this.category);
 }
 
-/// Disparado por el botón "Guardar". Transporta los valores de los campos
-/// de texto desde la UI; la validación ocurre en el BLoC, no aquí.
 class SubmitPlaceIntent extends AddPlaceIntent {
   final String name;
   final String description;
