@@ -233,4 +233,13 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get filterLabel => 'Filter';
+
+  @override
+  String get loadingMap => 'Setting Up Map';
+
+  @override
+  String get unknownCategory => 'Unknown';
 }

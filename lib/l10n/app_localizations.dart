@@ -523,6 +523,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{No saved places} =1{1 saved place} other{{count} saved places}}'**
   String savedPlacesCount(int count);
+
+  /// Label for the filter FAB button
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filterLabel;
+
+  /// Loading text shown while the map initializes
+  ///
+  /// In en, this message translates to:
+  /// **'Setting Up Map'**
+  String get loadingMap;
+
+  /// Fallback label for unknown category types
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknownCategory;
 }
 
 class _AppLocalizationsDelegate

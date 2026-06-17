@@ -49,8 +49,8 @@ class MapScreen extends StatelessWidget {
                         maxZoom: 18.0,
                         onLocationSelected: (location) {
                           context.read<MapBloc>().add(
-                                SelectMapLocationIntent(location),
-                              );
+                            SelectMapLocationIntent(location),
+                          );
                         },
                         onLongPress: (lat, lng) {
                           context.pushNamed(
@@ -76,15 +76,16 @@ class MapScreen extends StatelessWidget {
                           tooltip: l10n.myLocationTooltip,
                           onPressed: () {
                             context.read<MapBloc>().add(
-                                  FetchUserLocationIntent(),
-                                );
+                              FetchUserLocationIntent(),
+                            );
                           },
                           child: const Icon(Icons.my_location_outlined),
                         ),
                         const SizedBox(height: 12.0),
                         BlocBuilder<MapBloc, MapState>(
                           builder: (context, state) {
-                            final hasFilters = state is MapSuccess &&
+                            final hasFilters =
+                                state is MapSuccess &&
                                 state.selectedCategories.isNotEmpty;
 
                             return FloatingActionButton.extended(
@@ -95,8 +96,7 @@ class MapScreen extends StatelessWidget {
                                     ? Icons.filter_list
                                     : Icons.filter_list_outlined,
                               ),
-                              // Follow-up: agregar l10n key "filterLabel" en app_localizations.
-                              label: const Text('Filter'),
+                              label: Text(l10n.filterLabel),
                             );
                           },
                         ),
@@ -142,8 +142,8 @@ class MapScreen extends StatelessWidget {
                             location: state.selectedLocation!,
                             onClose: () {
                               context.read<MapBloc>().add(
-                                    DeselectMapLocationIntent(),
-                                  );
+                                DeselectMapLocationIntent(),
+                              );
                             },
                             onTap: (location) {
                               context.pushNamed(
@@ -182,16 +182,15 @@ class MapScreen extends StatelessWidget {
         value: bloc,
         child: BlocBuilder<MapBloc, MapState>(
           builder: (context, state) {
-            final successState =
-                state is MapSuccess ? state : MapSuccess(locations: const []);
+            final successState = state is MapSuccess
+                ? state
+                : MapSuccess(locations: const []);
 
             return MapFilterBottomSheet(
               locations: successState.locations,
               selectedCategories: successState.selectedCategories,
               onCategoryToggled: (category) {
-                context.read<MapBloc>().add(
-                      ToggleMapFilterIntent(category),
-                    );
+                context.read<MapBloc>().add(ToggleMapFilterIntent(category));
               },
             );
           },

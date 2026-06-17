@@ -222,5 +222,14 @@
     "placeholders": {
       "count": { "type": "int" }
     }
-  }
+  },
+
+  "filterLabel": "Filter",
+  "@filterLabel": { "description": "Label for the filter FAB button" },
+
+  "loadingMap": "Setting Up Map",
+  "@loadingMap": { "description": "Loading text shown while the map initializes" },
+
+  "unknownCategory": "Unknown",
+  "@unknownCategory": { "description": "Fallback label for unknown category types" }
 }
