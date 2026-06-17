@@ -15,6 +15,8 @@ class MapBloc extends Bloc<MapIntent, MapState> {
     on<SelectMapLocationIntent>(_onSelectLocation);
     on<DeselectMapLocationIntent>(_onDeselectLocation);
     on<FetchUserLocationIntent>(_onFetchUserLocation);
+    on<ToggleMapFilterIntent>(_onToggleFilter);
+    on<ClearMapFiltersIntent>(_onClearFilters);
   }
 
   Future<void> _onFetchLocations(
@@ -68,6 +70,32 @@ class MapBloc extends Bloc<MapIntent, MapState> {
       } catch (e) {
         // ignore: empty_catches
       }
+    }
+  }
+
+  void _onToggleFilter(
+    ToggleMapFilterIntent intent,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapSuccess) {
+      final currentState = state as MapSuccess;
+      final updatedCategories = Set<String>.from(currentState.selectedCategories);
+      if (updatedCategories.contains(intent.category)) {
+        updatedCategories.remove(intent.category);
+      } else {
+        updatedCategories.add(intent.category);
+      }
+      emit(currentState.copyWith(selectedCategories: updatedCategories));
+    }
+  }
+
+  void _onClearFilters(
+    ClearMapFiltersIntent intent,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapSuccess) {
+      final currentState = state as MapSuccess;
+      emit(currentState.copyWith(selectedCategories: {}));
     }
   }
 }

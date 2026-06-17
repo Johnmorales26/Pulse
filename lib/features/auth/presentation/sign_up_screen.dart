@@ -48,143 +48,156 @@ class SignUpScreen extends StatelessWidget {
             elevation: 0,
           ),
           body: SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                    child: Column(
-                      mainAxisAlignment: .center,
-                      crossAxisAlignment: .start,
-                      children: [
-                        Text(
-                          l10n.signUpTitle,
-                          style: Theme.of(context).textTheme.headlineLarge,
-                        ),
-                        const SizedBox(height: 16.0),
-                        DarkTextField(
-                          label: l10n.usernameLabel,
-                          hint: l10n.usernameHint,
-                          controller: usernameController,
-                          prefixIcon: const Icon(Icons.person),
-                        ),
-                        const SizedBox(height: 16.0),
-                        DarkTextField(
-                          label: l10n.emailLabel,
-                          hint: l10n.emailHint,
-                          controller: emailController,
-                          prefixIcon: const Icon(Icons.email),
-                        ),
-                        const SizedBox(height: 16.0),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: isPasswordObscured,
-                          builder: (context, obscured, _) {
-                            return DarkTextField(
-                              label: l10n.passwordLabel,
-                              hint: l10n.passwordHint,
-                              controller: passwordController,
-                              prefixIcon: const Icon(Icons.password),
-                              obscureText: obscured,
-                              suffixIcon: IconButton(
-                                onPressed: () => isPasswordObscured.value =
-                                    !isPasswordObscured.value,
-                                icon: Icon(
-                                  obscured
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).viewInsets.bottom -
+                      kToolbarHeight -
+                      MediaQuery.of(context).padding.vertical,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          child: Column(
+                            mainAxisAlignment: .center,
+                            crossAxisAlignment: .start,
+                            children: [
+                              Text(
+                                l10n.signUpTitle,
+                                style: Theme.of(context).textTheme.headlineLarge,
                               ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16.0),
-                        ValueListenableBuilder<bool>(
-                          valueListenable: isPasswordObscured,
-                          builder: (context, obscured, _) {
-                            return DarkTextField(
-                              label: l10n.confirmPasswordLabel,
-                              hint: l10n.passwordHint,
-                              controller: confirmPasswordController,
-                              prefixIcon: const Icon(Icons.password),
-                              obscureText: obscured,
-                              suffixIcon: IconButton(
-                                onPressed: () => isPasswordObscured.value =
-                                    !isPasswordObscured.value,
-                                icon: Icon(
-                                  obscured
-                                      ? Icons.visibility_off
-                                      : Icons.visibility,
-                                ),
+                              const SizedBox(height: 16.0),
+                              DarkTextField(
+                                label: l10n.usernameLabel,
+                                hint: l10n.usernameHint,
+                                controller: usernameController,
+                                prefixIcon: const Icon(Icons.person),
                               ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 24.0),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: isLoading
-                                ? null
-                                : () {
-                                    context.read<AuthBloc>().add(
-                                      SignUpIntent(
-                                        username: usernameController.text,
-                                        email: emailController.text.trim(),
-                                        password: passwordController.text,
-                                        confirmPassword:
-                                            confirmPasswordController.text,
+                              const SizedBox(height: 16.0),
+                              DarkTextField(
+                                label: l10n.emailLabel,
+                                hint: l10n.emailHint,
+                                controller: emailController,
+                                prefixIcon: const Icon(Icons.email),
+                              ),
+                              const SizedBox(height: 16.0),
+                              ValueListenableBuilder<bool>(
+                                valueListenable: isPasswordObscured,
+                                builder: (context, obscured, _) {
+                                  return DarkTextField(
+                                    label: l10n.passwordLabel,
+                                    hint: l10n.passwordHint,
+                                    controller: passwordController,
+                                    prefixIcon: const Icon(Icons.password),
+                                    obscureText: obscured,
+                                    suffixIcon: IconButton(
+                                      onPressed: () => isPasswordObscured.value =
+                                          !isPasswordObscured.value,
+                                      icon: Icon(
+                                        obscured
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
                                       ),
-                                    );
-                                  },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 18),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            child: isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
                                     ),
-                                  )
-                                : Text(l10n.signUpButton),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 16.0),
+                              ValueListenableBuilder<bool>(
+                                valueListenable: isPasswordObscured,
+                                builder: (context, obscured, _) {
+                                  return DarkTextField(
+                                    label: l10n.confirmPasswordLabel,
+                                    hint: l10n.passwordHint,
+                                    controller: confirmPasswordController,
+                                    prefixIcon: const Icon(Icons.password),
+                                    obscureText: obscured,
+                                    suffixIcon: IconButton(
+                                      onPressed: () => isPasswordObscured.value =
+                                          !isPasswordObscured.value,
+                                      icon: Icon(
+                                        obscured
+                                            ? Icons.visibility_off
+                                            : Icons.visibility,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              const SizedBox(height: 24.0),
+                              SizedBox(
+                                width: double.infinity,
+                                child: ElevatedButton(
+                                  onPressed: isLoading
+                                      ? null
+                                      : () {
+                                          context.read<AuthBloc>().add(
+                                            SignUpIntent(
+                                              username: usernameController.text,
+                                              email: emailController.text.trim(),
+                                              password: passwordController.text,
+                                              confirmPassword:
+                                                  confirmPasswordController.text,
+                                            ),
+                                          );
+                                        },
+                                  style: ElevatedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 18,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  child: isLoading
+                                      ? const SizedBox(
+                                          height: 20,
+                                          width: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                          ),
+                                        )
+                                      : Text(l10n.signUpButton),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 24.0,
-                    horizontal: 16.0,
-                  ),
-                  child: Center(
-                    child: RichText(
-                      text: TextSpan(
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Colors.grey.shade400,
-                        ),
-                        children: [
-                          TextSpan(text: '${l10n.hasAccountPrompt} '),
-                          TextSpan(
-                            text: l10n.signInLink,
-                            style: const TextStyle(
-                              color: Colors.purple,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () => context.pop(),
-                          ),
-                        ],
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 24.0,
+                          horizontal: 16.0,
+                        ),
+                        child: Center(
+                          child: RichText(
+                            text: TextSpan(
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: Colors.grey.shade400),
+                              children: [
+                                TextSpan(text: '${l10n.hasAccountPrompt} '),
+                                TextSpan(
+                                  text: l10n.signInLink,
+                                  style: const TextStyle(
+                                    color: Colors.purple,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  recognizer: TapGestureRecognizer()
+                                    ..onTap = () => context.pop(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
         );

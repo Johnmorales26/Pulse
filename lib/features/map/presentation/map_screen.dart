@@ -8,6 +8,7 @@ import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
 import 'package:pulse/features/map/presentation/widgets/location_card.dart';
+import 'package:pulse/features/map/presentation/widgets/map_filter_bottom_sheet.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_loading.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_success.dart';
 import 'package:pulse/l10n/app_localizations.dart';
@@ -18,12 +19,13 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: BlocProvider(
-        create: (context) => sl<MapBloc>()..add(FetchMapLocationsIntent()),
-        child: Builder(
-          builder: (innerContext) {
-            return Stack(
+
+    return BlocProvider(
+      create: (context) => sl<MapBloc>()..add(FetchMapLocationsIntent()),
+      child: Builder(
+        builder: (context) {
+          return Scaffold(
+            body: Stack(
               children: [
                 BlocBuilder<MapBloc, MapState>(
                   buildWhen: (previous, current) {
@@ -36,21 +38,22 @@ class MapScreen extends StatelessWidget {
                     if (state is MapInitial || state is MapLoading) {
                       return const MapWidgetLoading();
                     } else if (state is MapError) {
-                      return Center(child: Text(l10n.mapLoadError(state.error)));
+                      return Center(
+                        child: Text(l10n.mapLoadError(state.error)),
+                      );
                     } else if (state is MapSuccess) {
-                      final locations = state.locations;
-                      final userLocation = state.userLocation;
-
                       return MapWidgetSuccess(
-                        userLocation: userLocation,
-                        locations: locations,
+                        userLocation: state.userLocation,
+                        locations: state.filteredLocations,
+                        minZoom: 13.0,
+                        maxZoom: 18.0,
                         onLocationSelected: (location) {
-                          innerContext.read<MapBloc>().add(
-                            SelectMapLocationIntent(location),
-                          );
+                          context.read<MapBloc>().add(
+                                SelectMapLocationIntent(location),
+                              );
                         },
                         onLongPress: (lat, lng) {
-                          innerContext.pushNamed(
+                          context.pushNamed(
                             RouterNames.addPlace,
                             extra: (lat, lng),
                           );
@@ -61,28 +64,51 @@ class MapScreen extends StatelessWidget {
                     return const SizedBox.shrink();
                   },
                 ),
-
                 Align(
-                  alignment: .centerEnd,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: FloatingActionButton(
-                      tooltip: l10n.myLocationTooltip,
-                      onPressed: () {
-                        innerContext.read<MapBloc>().add(
-                          FetchUserLocationIntent(),
-                        );
-                      },
-                      child: Icon(Icons.my_location_outlined),
+                  alignment: AlignmentDirectional.bottomEnd,
+                  child: SafeArea(
+                    minimum: const EdgeInsets.only(right: 16.0, bottom: 96.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FloatingActionButton(
+                          heroTag: 'locationFab',
+                          tooltip: l10n.myLocationTooltip,
+                          onPressed: () {
+                            context.read<MapBloc>().add(
+                                  FetchUserLocationIntent(),
+                                );
+                          },
+                          child: const Icon(Icons.my_location_outlined),
+                        ),
+                        const SizedBox(height: 12.0),
+                        BlocBuilder<MapBloc, MapState>(
+                          builder: (context, state) {
+                            final hasFilters = state is MapSuccess &&
+                                state.selectedCategories.isNotEmpty;
+
+                            return FloatingActionButton.extended(
+                              heroTag: 'filterFab',
+                              onPressed: () => _showFilterBottomSheet(context),
+                              icon: Icon(
+                                hasFilters
+                                    ? Icons.filter_list
+                                    : Icons.filter_list_outlined,
+                              ),
+                              // Follow-up: agregar l10n key "filterLabel" en app_localizations.
+                              label: const Text('Filter'),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ),
-
                 SafeArea(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Align(
-                      alignment: .topEnd,
+                      alignment: AlignmentDirectional.topEnd,
                       child: Tooltip(
                         message: l10n.profileTooltip,
                         child: InkWell(
@@ -104,34 +130,69 @@ class MapScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 Align(
-                  alignment: .bottomCenter,
-                  child: BlocBuilder<MapBloc, MapState>(
-                    builder: (context, state) {
-                      if (state is MapSuccess &&
-                          state.selectedLocation != null) {
-                        return LocationCard(
-                          location: state.selectedLocation!,
-                          onClose: () {
-                            context.read<MapBloc>().add(
-                              DeselectMapLocationIntent(),
-                            );
-                          },
-                          onTap: (location) {
-                            context.pushNamed(
-                              RouterNames.placeDetail,
-                              pathParameters: {'id': location.id},
-                              extra: location,
-                            );
-                          },
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 80.0),
+                    child: BlocBuilder<MapBloc, MapState>(
+                      builder: (context, state) {
+                        if (state is MapSuccess &&
+                            state.selectedLocation != null) {
+                          return LocationCard(
+                            location: state.selectedLocation!,
+                            onClose: () {
+                              context.read<MapBloc>().add(
+                                    DeselectMapLocationIntent(),
+                                  );
+                            },
+                            onTap: (location) {
+                              context.pushNamed(
+                                RouterNames.placeDetail,
+                                pathParameters: {'id': location.id},
+                                extra: location,
+                              );
+                            },
+                          );
+                        }
+
+                        return const SizedBox.shrink();
+                      },
+                    ),
                   ),
                 ),
               ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _showFilterBottomSheet(BuildContext context) {
+    final bloc = context.read<MapBloc>();
+    final state = bloc.state;
+
+    if (state is! MapSuccess) {
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => BlocProvider.value(
+        value: bloc,
+        child: BlocBuilder<MapBloc, MapState>(
+          builder: (context, state) {
+            final successState =
+                state is MapSuccess ? state : MapSuccess(locations: const []);
+
+            return MapFilterBottomSheet(
+              locations: successState.locations,
+              selectedCategories: successState.selectedCategories,
+              onCategoryToggled: (category) {
+                context.read<MapBloc>().add(
+                      ToggleMapFilterIntent(category),
+                    );
+              },
             );
           },
         ),

@@ -13,8 +13,14 @@ class MapWidgetSuccess extends StatelessWidget
     implements OnPointAnnotationClickListener {
   final UserLocation? userLocation;
   final List<PlaceLocation> locations;
+  final double minZoom;
+  final double maxZoom;
   MapboxMap? _mapboxMap;
-  PointAnnotationManager? _pointAnnotationManager;
+
+  // SEPARATION: Two distinct annotation managers
+  PointAnnotationManager? _locationsAnnotationManager;  // Dynamic: business locations
+  PointAnnotationManager? _userAnnotationManager;  // Persistent: user location
+
   PointAnnotation? _userAnnotation;
   final void Function(PlaceLocation) onLocationSelected;
   final void Function(double lat, double lng) onLongPress;
@@ -23,6 +29,8 @@ class MapWidgetSuccess extends StatelessWidget
     super.key,
     required this.userLocation,
     required this.locations,
+    required this.minZoom,
+    required this.maxZoom,
     required this.onLocationSelected,
     required this.onLongPress,
   });
@@ -52,16 +60,26 @@ class MapWidgetSuccess extends StatelessWidget
       ),
     );
 
+    await mapboxMap.setBounds(
+      CameraBoundsOptions(
+        minZoom: minZoom,
+        maxZoom: maxZoom,
+      ),
+    );
+
     await _addMarkersToMap(mapboxMap);
 
     await _updateUserLocationPin(userLocation);
   }
 
   Future<void> _addMarkersToMap(MapboxMap mapboxMap) async {
-    _pointAnnotationManager = await mapboxMap.annotations
-        .createPointAnnotationManager();
-    _pointAnnotationManager?.addOnPointAnnotationClickListener(this);
+    // Create separate managers for locations vs user
+    _locationsAnnotationManager = await mapboxMap.annotations.createPointAnnotationManager();
+    _userAnnotationManager = await mapboxMap.annotations.createPointAnnotationManager();
 
+    _locationsAnnotationManager?.addOnPointAnnotationClickListener(this);
+
+    // Add business locations (filtered by category)
     for (var loc in locations) {
       try {
         final place = PlaceIcon.fromId(loc.type);
@@ -75,7 +93,7 @@ class MapWidgetSuccess extends StatelessWidget
           iconSize: 0.1,
         );
 
-        final annotation = await _pointAnnotationManager!.create(
+        final annotation = await _locationsAnnotationManager!.create(
           pointAnnotationOptions,
         );
         _annotationMap[annotation.id] = loc;
@@ -83,10 +101,36 @@ class MapWidgetSuccess extends StatelessWidget
         // ignore: empty_catches
       }
     }
+
+    // Add user location (persistent, independent of filters)
+    if (userLocation != null) {
+      await _createUserAnnotation(userLocation!);
+    }
+  }
+
+  /// Creates user location annotation independently.
+  Future<void> _createUserAnnotation(UserLocation loc) async {
+    if (_userAnnotationManager == null) return;
+
+    try {
+      final ByteData bytes = await rootBundle.load('assets/icons/locations/ic_location_user.png');
+      final Uint8List imageBytes = bytes.buffer.asUint8List();
+
+      final point = Point(coordinates: Position(loc.longitude, loc.latitude));
+      final options = PointAnnotationOptions(
+        geometry: point,
+        image: imageBytes,
+        iconSize: 0.1,
+      );
+
+      _userAnnotation = await _userAnnotationManager!.create(options);
+    } catch (e) {
+      // ignore: empty_catches
+    }
   }
 
   Future<void> _updateUserLocationPin(UserLocation? loc) async {
-    if (loc == null || _pointAnnotationManager == null) return;
+    if (loc == null || _userAnnotationManager == null) return;
 
     try {
       final ByteData bytes = await rootBundle.load('assets/icons/locations/ic_location_user.png');
@@ -95,11 +139,12 @@ class MapWidgetSuccess extends StatelessWidget
       final point = Point(coordinates: Position(loc.longitude, loc.latitude));
 
       if (_userAnnotation == null) {
-        final options = PointAnnotationOptions(geometry: point, image: imageBytes, iconSize: 0.1);
-        _userAnnotation = await _pointAnnotationManager!.create(options);
+        _userAnnotation = await _userAnnotationManager!.create(
+          PointAnnotationOptions(geometry: point, image: imageBytes, iconSize: 0.1),
+        );
       } else {
         _userAnnotation!.geometry = point;
-        await _pointAnnotationManager!.update(_userAnnotation!);
+        await _userAnnotationManager!.update(_userAnnotation!);
       }
     } catch (e) {
       // ignore: empty_catches
@@ -152,17 +197,63 @@ class MapWidgetSuccess extends StatelessWidget
           _updateUserLocationPin(state.userLocation);
         }
       },
-      child: MapWidget(
-        textureView: true,
-        key: const ValueKey('Pulse Map'),
-        onMapCreated: _onMapCreated,
-        cameraOptions: cameraOptions,
-        styleUri: MapboxStyles.DARK,
-        onLongTapListener: (MapContentGestureContext ctx) {
-          final coords = ctx.point.coordinates;
-          onLongPress(coords.lat.toDouble(), coords.lng.toDouble());
+      child: BlocListener<MapBloc, MapState>(
+        listenWhen: (previous, current) {
+          if (previous is MapSuccess && current is MapSuccess) {
+            return previous.selectedCategories != current.selectedCategories;
+          }
+          return false;
         },
+        listener: (context, state) {
+          if (state is MapSuccess) {
+            _updateMarkers(state.filteredLocations);
+          }
+        },
+        child: MapWidget(
+          textureView: true,
+          key: const ValueKey('Pulse Map'),
+          onMapCreated: _onMapCreated,
+          cameraOptions: cameraOptions,
+          styleUri: MapboxStyles.LIGHT,
+          onLongTapListener: (MapContentGestureContext ctx) {
+            final coords = ctx.point.coordinates;
+            onLongPress(coords.lat.toDouble(), coords.lng.toDouble());
+          },
+        ),
       ),
     );
   }
+
+  /// Updates only business location markers (filters applied).
+/// User pin remains untouched in its separate manager.
+Future<void> _updateMarkers(List<PlaceLocation> newLocations) async {
+  if (_locationsAnnotationManager == null) return;
+
+  // Clear ONLY locations manager (user pin stays safe)
+  await _locationsAnnotationManager!.deleteAll();
+  _annotationMap.clear();
+
+  // Add filtered business locations
+  for (var loc in newLocations) {
+    try {
+      final place = PlaceIcon.fromId(loc.type);
+
+      final ByteData bytes = await rootBundle.load(place.asset);
+      final Uint8List imageBytes = bytes.buffer.asUint8List();
+
+      final pointAnnotationOptions = PointAnnotationOptions(
+        geometry: Point(coordinates: Position(loc.longitude, loc.latitude)),
+        image: imageBytes,
+        iconSize: 0.1,
+      );
+
+      final annotation = await _locationsAnnotationManager!.create(
+        pointAnnotationOptions,
+      );
+      _annotationMap[annotation.id] = loc;
+    } catch (e) {
+      // ignore: empty_catches
+    }
+  }
+}
 }

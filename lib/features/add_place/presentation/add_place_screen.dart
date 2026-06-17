@@ -88,63 +88,75 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
           final isLoading = state.status == AddPlaceStatus.loading;
 
           return SafeArea(
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset(
-                          'assets/images/img_map_simulated.png',
-                          width: double.infinity,
-                          fit: BoxFit.cover,
+            child: SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minHeight: MediaQuery.of(context).size.height -
+                      MediaQuery.of(context).viewInsets.bottom -
+                      kToolbarHeight -
+                      MediaQuery.of(context).padding.vertical,
+                ),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                'assets/images/img_map_simulated.png',
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                              const SizedBox(height: 16.0),
+                              DarkTextField(
+                                label: l10n.placeNameLabel,
+                                hint: l10n.placeNameHint,
+                                controller: _nameController,
+                              ),
+                              const SizedBox(height: 8.0),
+                              DarkTextField(
+                                label: l10n.placeDescriptionLabel,
+                                hint: l10n.placeDescriptionHint,
+                                controller: _descriptionController,
+                              ),
+                              const SizedBox(height: 16.0),
+                              Text(
+                                l10n.categoryLabel,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                              const SizedBox(height: 4.0),
+                              CategoryTile(
+                                selected: state.selectedCategory,
+                                onTap: () => _showCategoryBottomSheet(context),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 16.0),
-                        DarkTextField(
-                          label: l10n.placeNameLabel,
-                          hint: l10n.placeNameHint,
-                          controller: _nameController,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: FloatingActionButton.extended(
+                          onPressed: isLoading ? null : () => _onSave(context),
+                          icon: isLoading
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.save),
+                          label: Text(isLoading ? l10n.savingLabel : l10n.savePlaceButton),
                         ),
-                        const SizedBox(height: 8.0),
-                        DarkTextField(
-                          label: l10n.placeDescriptionLabel,
-                          hint: l10n.placeDescriptionHint,
-                          controller: _descriptionController,
-                        ),
-                        const SizedBox(height: 16.0),
-                        Text(
-                          l10n.categoryLabel,
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                        const SizedBox(height: 4.0),
-                        CategoryTile(
-                          selected: state.selectedCategory,
-                          onTap: () => _showCategoryBottomSheet(context),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 24.0),
-                  child: FloatingActionButton.extended(
-                    onPressed: isLoading ? null : () => _onSave(context),
-                    icon: isLoading
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Icon(Icons.save),
-                    label: Text(isLoading ? l10n.savingLabel : l10n.savePlaceButton),
-                  ),
-                ),
-              ],
+              ),
             ),
           );
         },

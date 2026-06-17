@@ -22,7 +22,7 @@ class GradientAvatar extends StatelessWidget {
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
         gradient: LinearGradient(
-          colors: [Color(0xFF8E2DE2), Color(0XFF4A00E0)],
+          colors: [Color(0xFFfff495), Color(0XFFffd60a)],
         ),
       ),
       padding: const EdgeInsets.all(3.0),

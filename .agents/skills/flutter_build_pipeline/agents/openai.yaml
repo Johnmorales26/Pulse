@@ -1,0 +1,3 @@
+interface:
+  display_name: "Flutter Build Pipeline"
+  short_description: "Run the standard Flutter clean/get/upgrade/build_runner pipeline and report errors in markdown."

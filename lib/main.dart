@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Pulse',
       debugShowCheckedModeBanner: false,
-      theme: theme.dark(),
+      theme: theme.light(),
       routerConfig: AppRouter.router,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
