@@ -1,5 +1,17 @@
 # Changelog
 
+## 2026-06-18
+
+### Added
+
+- Add `AppBlur` constants and shared `clampSigma` / `clampBodyOpacity` utilities under `lib/core/theme/` and `lib/core/presentation/`.
+- Add `showBlurredDialog` and `showBlurredModalBottomSheet` helpers with WCAG-aware body opacity and theme-derived barrier tint.
+- Add `bottomSheetTheme` and `dialogTheme` to `MaterialTheme` for translucent overlays.
+
+### Changed
+
+- Replace deprecated `colorScheme.background` with `colorScheme.surface` in `scaffoldBackgroundColor`.
+
 ## 2026-06-17
 
 ### Added
