@@ -169,7 +169,7 @@ class MapWidgetSuccess extends StatelessWidget
           userLocation?.latitude ?? 19.432608,
         ),
       ),
-      zoom: 13.0,
+      zoom: 14.0,
     );
 
     return BlocListener<MapBloc, MapState>(

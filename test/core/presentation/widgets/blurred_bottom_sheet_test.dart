@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
-import 'package:pulse/core/theme/blur.dart';
+import 'package:pulse/core/presentation/blur.dart';
 
 void main() {
   // ---------------------------------------------------------------------------
@@ -121,10 +121,31 @@ void main() {
     testWidgets('elevation is 0', (WidgetTester tester) async {
       await openSheet(tester);
 
-      // showModalBottomSheet with elevation: 0 — the sheet's own Material
-      // should have no elevation shadow.  We verify the barrier indicator
-      // via the fact that tapping a non-interactive area dismisses.
-      expect(find.byType(BackdropFilter), findsOneWidget);
+      // The body Material should have elevation: 0 — the blur provides
+      // visual separation, so Material elevation must be locked at 0.
+      final material = tester.widget<Material>(findBodyMaterial());
+      expect(material.elevation, 0.0);
+    });
+
+    testWidgets('barrier color derives from ColorScheme.scrim with alpha 0.15',
+        (WidgetTester tester) async {
+      await openSheet(tester);
+
+      // The sheet's child Text lives inside the bottom sheet route.
+      final BuildContext sheetChildContext =
+          tester.element(find.text('Sheet body'));
+      final ColorScheme colorScheme = Theme.of(sheetChildContext).colorScheme;
+      final ModalRoute<dynamic> route =
+          ModalRoute.of<dynamic>(sheetChildContext)!;
+
+      // The route's barrierColor must be derived from
+      // ColorScheme.scrim.withValues(alpha: barrierOpacityDefault).
+      expect(
+        route.barrierColor,
+        equals(
+          colorScheme.scrim.withValues(alpha: AppBlur.barrierOpacityDefault),
+        ),
+      );
     });
 
     testWidgets('default borderRadius is 20 px top corners',

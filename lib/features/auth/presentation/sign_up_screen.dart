@@ -182,8 +182,8 @@ class SignUpScreen extends StatelessWidget {
                                 TextSpan(text: '${l10n.hasAccountPrompt} '),
                                 TextSpan(
                                   text: l10n.signInLink,
-                                  style: const TextStyle(
-                                    color: Colors.purple,
+                                  style: TextStyle(
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                   recognizer: TapGestureRecognizer()

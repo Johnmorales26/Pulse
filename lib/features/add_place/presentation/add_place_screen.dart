@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_bloc.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_intent.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_state.dart';
@@ -170,71 +171,60 @@ void _showCategoryBottomSheet(BuildContext context) {
       .where((c) => c != PlaceIcon.all && c != PlaceIcon.unknown)
       .toList();
 
-  showModalBottomSheet<void>(
+  showBlurredModalBottomSheet<void>(
     context: context,
-    backgroundColor: const Color(0xff1e1e1e),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-    ),
-    isScrollControlled: true,
-    builder: (sheetContext) {
-      final l10n = AppLocalizations.of(context)!;
+    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+    child: Builder(
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(context)!;
 
-      return ConstrainedBox(
-        constraints: BoxConstraints(
-          maxHeight: MediaQuery.of(context).size.height * 0.65,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 12),
-            Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.white24,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  l10n.selectCategoryTitle,
-                  style: Theme.of(context).textTheme.titleMedium,
+        return ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.65,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    l10n.selectCategoryTitle,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.only(bottom: 16),
-                itemCount: categories.length,
-                itemBuilder: (_, index) {
-                  final category = categories[index];
-                  return ListTile(
-                    leading: Image.asset(
-                      category.asset,
-                      width: 36,
-                      height: 36,
-                    ),
-                    title: Text(category.label),
-                    onTap: () {
-                      context.read<AddPlaceBloc>().add(
-                        SelectCategoryIntent(category),
-                      );
-                      Navigator.of(sheetContext).pop();
-                    },
-                  );
-                },
+              const SizedBox(height: 8),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.only(bottom: 16),
+                  itemCount: categories.length,
+                  itemBuilder: (_, index) {
+                    final category = categories[index];
+                    return ListTile(
+                      leading: Image.asset(
+                        category.asset,
+                        width: 36,
+                        height: 36,
+                      ),
+                      title: Text(category.label),
+                      onTap: () {
+                        context.read<AddPlaceBloc>().add(
+                          SelectCategoryIntent(category),
+                        );
+                        Navigator.of(sheetContext).pop();
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      );
-    },
+            ],
+          ),
+        );
+      },
+    ),
   );
 }

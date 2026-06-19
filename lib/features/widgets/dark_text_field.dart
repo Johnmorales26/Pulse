@@ -34,7 +34,7 @@ class DarkTextField extends StatelessWidget {
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey.shade500),
             filled: true,
-            fillColor: const Color(0xff2a2a2a),
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHigh,
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             contentPadding: const EdgeInsets.symmetric(

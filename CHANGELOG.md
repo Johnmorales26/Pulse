@@ -11,6 +11,7 @@
 ### Changed
 
 - Replace deprecated `colorScheme.background` with `colorScheme.surface` in `scaffoldBackgroundColor`.
+- Migrate 5 bottom-sheet callsites (map filter, profile image picker, saved places, add-place category, place-detail map picker) to `showBlurredModalBottomSheet`.
 
 ## 2026-06-17
 

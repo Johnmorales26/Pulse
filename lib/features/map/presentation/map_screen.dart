@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pulse/core/auth/domain/usecases/get_current_user_id_use_case.dart';
 import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router_names.dart';
+import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
@@ -45,7 +46,7 @@ class MapScreen extends StatelessWidget {
                       return MapWidgetSuccess(
                         userLocation: state.userLocation,
                         locations: state.filteredLocations,
-                        minZoom: 13.0,
+                        minZoom: 10.0,
                         maxZoom: 18.0,
                         onLocationSelected: (location) {
                           context.read<MapBloc>().add(
@@ -176,9 +177,9 @@ class MapScreen extends StatelessWidget {
       return;
     }
 
-    showModalBottomSheet(
+    showBlurredModalBottomSheet(
       context: context,
-      builder: (_) => BlocProvider.value(
+      child: BlocProvider.value(
         value: bloc,
         child: BlocBuilder<MapBloc, MapState>(
           builder: (context, state) {

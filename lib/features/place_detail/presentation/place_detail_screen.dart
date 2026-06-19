@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pulse/core/di/injection.dart';
+import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/core/utils/launch_map_use_case.dart';
 import 'package:pulse/core/utils/date_time_extensions.dart';
 import 'package:pulse/features/map/domain/model/place_comments.dart';
@@ -43,9 +44,9 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
     try {
       final maps = await sl<LaunchMapUseCase>()();
       if (!mounted) return;
-      showModalBottomSheet(
+      showBlurredModalBottomSheet(
         context: context,
-        builder: (_) => _MapPickerSheet(
+        child: _MapPickerSheet(
           maps: maps,
           latitude: place.latitude,
           longitude: place.longitude,

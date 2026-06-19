@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router_names.dart';
+import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/features/map/domain/model/place_icon.dart';
 import 'package:pulse/features/profile/domain/model/user_profile.dart';
 import 'package:pulse/features/profile/presentation/bloc/profile_bloc.dart';
@@ -24,9 +25,9 @@ class ProfileScreen extends StatelessWidget {
   Future<void> _pickAndUploadImage(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
 
-    final source = await showModalBottomSheet<ImageSource>(
+    final source = await showBlurredModalBottomSheet<ImageSource>(
       context: context,
-      builder: (_) => SafeArea(
+      child: SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -58,11 +59,9 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showSavedPlacesBottomSheet(BuildContext context) {
-    showModalBottomSheet(
+    showBlurredModalBottomSheet(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => BlocProvider(
+      child: BlocProvider(
         create: (_) => sl<SavedPlacesBloc>()..add(LoadSavedPlacesIntent()),
         child: DraggableScrollableSheet(
           initialChildSize: 0.6,
@@ -145,9 +144,9 @@ class ProfileScreen extends StatelessWidget {
                                 ),
                                 if (!isPhotoUploading)
                                   Container(
-                                    decoration: const BoxDecoration(
+                                    decoration: BoxDecoration(
                                       shape: BoxShape.circle,
-                                      color: Color(0xFF8E2DE2),
+                                      color: Theme.of(context).colorScheme.primary,
                                     ),
                                     padding: const EdgeInsets.all(4),
                                     child: const Icon(
