@@ -246,4 +246,18 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get unknownCategory => 'Desconocido';
+
+  @override
+  String get searchHint => 'Buscar lugares...';
+
+  @override
+  String get searchLabel => 'Buscar';
+
+  @override
+  String get noResults => 'Ningún lugar coincide con tu búsqueda';
+
+  @override
+  String distanceFormat(String distance) {
+    return '$distance';
+  }
 }

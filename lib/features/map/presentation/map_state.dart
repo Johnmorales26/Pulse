@@ -1,3 +1,4 @@
+import 'package:pulse/core/utils/distance.dart';
 import 'package:pulse/features/map/domain/model/user_location.dart';
 
 import '../domain/model/place_location.dart';
@@ -14,6 +15,7 @@ class MapSuccess extends MapState {
   final UserLocation? userLocation;
   final DateTime? lastLocationUpdate;
   final Set<String> selectedCategories;
+  final String searchQuery;
 
   MapSuccess({
     required this.locations,
@@ -21,6 +23,7 @@ class MapSuccess extends MapState {
     this.userLocation,
     this.lastLocationUpdate,
     this.selectedCategories = const {},
+    this.searchQuery = '',
   });
 
   /// Returns filtered locations based on selectedCategories.
@@ -39,6 +42,39 @@ class MapSuccess extends MapState {
     return locations.map((l) => l.type).toSet();
   }
 
+  /// Returns locations filtered by search query (case-insensitive substring
+  /// match on name), sorted by distance from the user. Falls back to
+  /// alphabetical sort when user location is unavailable.
+  List<PlaceLocation> get searchedAndSortedLocations {
+    final base = searchQuery.isEmpty
+        ? filteredLocations
+        : filteredLocations
+            .where((p) =>
+                p.name.toLowerCase().contains(searchQuery.toLowerCase()))
+            .toList();
+
+    if (userLocation != null) {
+      base.sort((a, b) {
+        final dA = haversineDistance(
+          userLocation!.latitude,
+          userLocation!.longitude,
+          a.latitude,
+          a.longitude,
+        );
+        final dB = haversineDistance(
+          userLocation!.latitude,
+          userLocation!.longitude,
+          b.latitude,
+          b.longitude,
+        );
+        return dA.compareTo(dB);
+      });
+    } else {
+      base.sort((a, b) => a.name.compareTo(b.name));
+    }
+    return base;
+  }
+
   MapSuccess copyWith({
     List<PlaceLocation>? locations,
     PlaceLocation? selectedLocation,
@@ -46,6 +82,7 @@ class MapSuccess extends MapState {
     bool clearSelection = false,
     DateTime? lastLocationUpdate,
     Set<String>? selectedCategories,
+    String? searchQuery,
   }) {
     return MapSuccess(
       locations: locations ?? this.locations,
@@ -55,6 +92,7 @@ class MapSuccess extends MapState {
       userLocation: userLocation ?? this.userLocation,
       lastLocationUpdate: lastLocationUpdate ?? this.lastLocationUpdate,
       selectedCategories: selectedCategories ?? this.selectedCategories,
+      searchQuery: searchQuery ?? this.searchQuery,
     );
   }
 }

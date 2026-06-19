@@ -17,6 +17,8 @@ class MapBloc extends Bloc<MapIntent, MapState> {
     on<FetchUserLocationIntent>(_onFetchUserLocation);
     on<ToggleMapFilterIntent>(_onToggleFilter);
     on<ClearMapFiltersIntent>(_onClearFilters);
+    on<SearchPlacesIntent>(_onSearchPlaces);
+    on<ClearSearchIntent>(_onClearSearch);
   }
 
   Future<void> _onFetchLocations(
@@ -96,6 +98,26 @@ class MapBloc extends Bloc<MapIntent, MapState> {
     if (state is MapSuccess) {
       final currentState = state as MapSuccess;
       emit(currentState.copyWith(selectedCategories: {}));
+    }
+  }
+
+  void _onSearchPlaces(
+    SearchPlacesIntent intent,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapSuccess) {
+      final currentState = state as MapSuccess;
+      emit(currentState.copyWith(searchQuery: intent.query));
+    }
+  }
+
+  void _onClearSearch(
+    ClearSearchIntent intent,
+    Emitter<MapState> emit,
+  ) {
+    if (state is MapSuccess) {
+      final currentState = state as MapSuccess;
+      emit(currentState.copyWith(searchQuery: ''));
     }
   }
 }

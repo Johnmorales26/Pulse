@@ -8,7 +8,7 @@ import 'package:pulse/core/theme/colors.dart';
 import 'package:pulse/core/theme/typography.dart';
 import 'package:pulse/firebase_options.dart';
 
-void main() async {
+void main() async {  
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 

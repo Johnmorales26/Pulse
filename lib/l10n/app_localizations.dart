@@ -541,6 +541,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get unknownCategory;
+
+  /// Hint text for the place search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search places...'**
+  String get searchHint;
+
+  /// Label for the search FAB and search field
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get searchLabel;
+
+  /// Message shown when search returns no results
+  ///
+  /// In en, this message translates to:
+  /// **'No places match your search'**
+  String get noResults;
+
+  /// Formatted distance display pattern. {distance} is replaced by the formatted distance string (e.g. '450 m' or '2.5 km')
+  ///
+  /// In en, this message translates to:
+  /// **'{distance}'**
+  String distanceFormat(String distance);
 }
 
 class _AppLocalizationsDelegate

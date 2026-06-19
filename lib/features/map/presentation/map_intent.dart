@@ -19,3 +19,10 @@ class ToggleMapFilterIntent extends MapIntent {
 }
 
 class ClearMapFiltersIntent extends MapIntent {}
+
+class SearchPlacesIntent extends MapIntent {
+  final String query;
+  SearchPlacesIntent(this.query);
+}
+
+class ClearSearchIntent extends MapIntent {}

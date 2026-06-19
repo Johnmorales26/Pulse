@@ -85,7 +85,7 @@ flutter:
   assets:
     - assets/icons/locations/
     - assets/images/
-    - assets/animations/animation_pin.json
+    - assets/animations/animation_loading.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

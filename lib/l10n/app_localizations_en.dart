@@ -242,4 +242,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unknownCategory => 'Unknown';
+
+  @override
+  String get searchHint => 'Search places...';
+
+  @override
+  String get searchLabel => 'Search';
+
+  @override
+  String get noResults => 'No places match your search';
+
+  @override
+  String distanceFormat(String distance) {
+    return '$distance';
+  }
 }

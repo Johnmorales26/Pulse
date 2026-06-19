@@ -9,7 +9,7 @@ class MapWidgetLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final controller = IconController.assets(
-      'assets/animations/animation_pin.json',
+      'assets/animations/animation_loading.json',
     );
 
     controller.addStatusListener((status) {

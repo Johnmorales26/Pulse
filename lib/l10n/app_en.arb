@@ -231,5 +231,22 @@
   "@loadingMap": { "description": "Loading text shown while the map initializes" },
 
   "unknownCategory": "Unknown",
-  "@unknownCategory": { "description": "Fallback label for unknown category types" }
+  "@unknownCategory": { "description": "Fallback label for unknown category types" },
+
+  "searchHint": "Search places...",
+  "@searchHint": { "description": "Hint text for the place search field" },
+
+  "searchLabel": "Search",
+  "@searchLabel": { "description": "Label for the search FAB and search field" },
+
+  "noResults": "No places match your search",
+  "@noResults": { "description": "Message shown when search returns no results" },
+
+  "distanceFormat": "{distance}",
+  "@distanceFormat": {
+    "description": "Formatted distance display pattern. {distance} is replaced by the formatted distance string (e.g. '450 m' or '2.5 km')",
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  }
 }

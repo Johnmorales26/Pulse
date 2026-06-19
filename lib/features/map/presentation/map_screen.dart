@@ -10,6 +10,7 @@ import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
 import 'package:pulse/features/map/presentation/widgets/location_card.dart';
 import 'package:pulse/features/map/presentation/widgets/map_filter_bottom_sheet.dart';
+import 'package:pulse/features/map/presentation/widgets/map_search_bottom_sheet.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_loading.dart';
 import 'package:pulse/features/map/presentation/widgets/map_widget_success.dart';
 import 'package:pulse/l10n/app_localizations.dart';
@@ -86,6 +87,13 @@ class MapScreen extends StatelessWidget {
                             );
                           },
                           child: const Icon(Icons.my_location_outlined),
+                        ),
+                        const SizedBox(height: 12.0),
+                        FloatingActionButton(
+                          heroTag: 'searchFab',
+                          tooltip: l10n.searchLabel,
+                          onPressed: () => _showSearchBottomSheet(context),
+                          child: const Icon(Icons.search),
                         ),
                         const SizedBox(height: 12.0),
                         BlocBuilder<MapBloc, MapState>(
@@ -201,6 +209,23 @@ class MapScreen extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  void _showSearchBottomSheet(BuildContext context) {
+    final bloc = context.read<MapBloc>();
+    final state = bloc.state;
+
+    if (state is! MapSuccess) {
+      return;
+    }
+
+    showBlurredModalBottomSheet(
+      context: context,
+      child: BlocProvider.value(
+        value: bloc,
+        child: const MapSearchBottomSheet(),
       ),
     );
   }

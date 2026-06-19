@@ -86,5 +86,10 @@
   "@loadingMap": { "description": "Loading text shown while the map initializes" },
 
   "unknownCategory": "Desconocido",
-  "@unknownCategory": { "description": "Fallback label for unknown category types" }
+  "@unknownCategory": { "description": "Fallback label for unknown category types" },
+
+  "searchHint": "Buscar lugares...",
+  "searchLabel": "Buscar",
+  "noResults": "Ningún lugar coincide con tu búsqueda",
+  "distanceFormat": "{distance}"
 }
