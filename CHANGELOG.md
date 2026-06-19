@@ -5,11 +5,14 @@
 ### Added
 
 - Add shared `AppToast` helpers for success, error, warning, and info toast notifications.
+- Add a floating map action bar for search, filtering, and location controls.
+- Add a searchable, distance-sorted place list in a map bottom sheet.
 
 ### Changed
 
 - Replace feature snackbars with consistent toast notifications across auth, add-place, place-detail, and profile flows.
 - Refresh map locations after successfully creating a place from the map long-press flow.
+- Replace individual map actions with an accessible floating control bar.
 
 ## 2026-06-18
 

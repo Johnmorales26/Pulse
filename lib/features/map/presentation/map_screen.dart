@@ -8,6 +8,7 @@ import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/features/map/presentation/map_bloc.dart';
 import 'package:pulse/features/map/presentation/map_intent.dart';
 import 'package:pulse/features/map/presentation/map_state.dart';
+import 'package:pulse/features/map/presentation/widgets/floating_map_action_bar.dart';
 import 'package:pulse/features/map/presentation/widgets/location_card.dart';
 import 'package:pulse/features/map/presentation/widgets/map_filter_bottom_sheet.dart';
 import 'package:pulse/features/map/presentation/widgets/map_search_bottom_sheet.dart';
@@ -71,52 +72,41 @@ class MapScreen extends StatelessWidget {
                     return const SizedBox.shrink();
                   },
                 ),
-                Align(
-                  alignment: AlignmentDirectional.bottomEnd,
-                  child: SafeArea(
-                    minimum: const EdgeInsets.only(right: 16.0, bottom: 96.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FloatingActionButton(
-                          heroTag: 'locationFab',
-                          tooltip: l10n.myLocationTooltip,
-                          onPressed: () {
+                BlocBuilder<MapBloc, MapState>(
+                  buildWhen: (previous, current) {
+                    if (previous is MapSuccess && current is MapSuccess) {
+                      return previous.selectedCategories !=
+                          current.selectedCategories;
+                    }
+                    return true;
+                  },
+                  builder: (context, state) {
+                    final hasFilters = state is MapSuccess &&
+                        state.selectedCategories.isNotEmpty;
+
+                    return Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: SafeArea(
+                        minimum: const EdgeInsets.only(
+                          bottom: 32.0,
+                          left: 24.0,
+                          right: 24.0,
+                        ),
+                        child: FloatingMapActionBar(
+                          onSearch: () => _showSearchBottomSheet(context),
+                          onFilter: () => _showFilterBottomSheet(context),
+                          onLocation: () {
                             context.read<MapBloc>().add(
                               FetchUserLocationIntent(),
                             );
                           },
-                          child: const Icon(Icons.my_location_outlined),
+                          isFilterActive: hasFilters,
                         ),
-                        const SizedBox(height: 12.0),
-                        FloatingActionButton(
-                          heroTag: 'searchFab',
-                          tooltip: l10n.searchLabel,
-                          onPressed: () => _showSearchBottomSheet(context),
-                          child: const Icon(Icons.search),
-                        ),
-                        const SizedBox(height: 12.0),
-                        BlocBuilder<MapBloc, MapState>(
-                          builder: (context, state) {
-                            final hasFilters =
-                                state is MapSuccess &&
-                                state.selectedCategories.isNotEmpty;
-
-                            return FloatingActionButton.extended(
-                              heroTag: 'filterFab',
-                              onPressed: () => _showFilterBottomSheet(context),
-                              icon: Icon(
-                                hasFilters
-                                    ? Icons.filter_list
-                                    : Icons.filter_list_outlined,
-                              ),
-                              label: Text(l10n.filterLabel),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
                 SafeArea(
                   child: Padding(
@@ -147,7 +137,7 @@ class MapScreen extends StatelessWidget {
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Padding(
-                    padding: const EdgeInsets.only(bottom: 80.0),
+                    padding: const EdgeInsets.only(bottom: 120.0),
                     child: BlocBuilder<MapBloc, MapState>(
                       builder: (context, state) {
                         if (state is MapSuccess &&
