@@ -53,11 +53,16 @@ class MapScreen extends StatelessWidget {
                             SelectMapLocationIntent(location),
                           );
                         },
-                        onLongPress: (lat, lng) {
-                          context.pushNamed(
+                        onLongPress: (lat, lng) async {
+                          final result = await context.pushNamed<bool>(
                             RouterNames.addPlace,
                             extra: (lat, lng),
                           );
+                          if (result == true && context.mounted) {
+                            context.read<MapBloc>().add(
+                              FetchMapLocationsIntent(),
+                            );
+                          }
                         },
                       );
                     }

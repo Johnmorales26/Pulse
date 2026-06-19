@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-06-19
+
+### Added
+
+- Add shared `AppToast` helpers for success, error, warning, and info toast notifications.
+
+### Changed
+
+- Replace feature snackbars with consistent toast notifications across auth, add-place, place-detail, and profile flows.
+- Refresh map locations after successfully creating a place from the map long-press flow.
+
 ## 2026-06-18
 
 ### Added

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:map_launcher/map_launcher.dart';
 import 'package:pulse/core/di/injection.dart';
+import 'package:pulse/core/presentation/utils/app_toast.dart';
 import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/core/utils/launch_map_use_case.dart';
 import 'package:pulse/core/utils/date_time_extensions.dart';
@@ -55,11 +56,7 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
       );
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.noMapsInstalled),
-        ),
-      );
+      AppToast.info(context, AppLocalizations.of(context)!.noMapsInstalled);
     }
   }
 
@@ -85,26 +82,15 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
               current.status == PlaceDetailStatus.unauthenticated,
           listener: (context, state) {
             if (state.status == PlaceDetailStatus.unauthenticated) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage ?? l10n.signInRequired),
-                  backgroundColor: Colors.orange,
-                ),
-              );
+              AppToast.info(context, state.errorMessage ?? l10n.signInRequired);
               return;
             }
             if (state.status == PlaceDetailStatus.success) {
               _commentController.clear();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.commentAdded)),
-              );
+              AppToast.info(context, l10n.commentAdded);
             }
             if (state.status == PlaceDetailStatus.error) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage ?? l10n.commentError),
-                ),
-              );
+              AppToast.error(context, state.errorMessage ?? l10n.commentError);
             }
           },
           builder: (context, state) {
@@ -123,8 +109,8 @@ class _PlaceDetailScreenState extends State<PlaceDetailScreen> {
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () => context.read<PlaceDetailBloc>().add(
-                                ObservePlaceDetailIntent(widget.placeId),
-                              ),
+                            ObservePlaceDetailIntent(widget.placeId),
+                          ),
                           child: Text(l10n.retryButton),
                         ),
                       ],
@@ -191,14 +177,14 @@ class _PlaceDetailBody extends StatelessWidget {
                   builder: (context, state) {
                     return OutlinedButton.icon(
                       onPressed: () => context.read<PlaceDetailBloc>().add(
-                            ToggleSavePlaceIntent(placeId),
-                          ),
-                      icon: Icon(
-                        state.isSaved
-                            ? Icons.bookmark
-                            : Icons.bookmark_border,
+                        ToggleSavePlaceIntent(placeId),
                       ),
-                      label: Text(state.isSaved ? l10n.savedButton : l10n.saveButton),
+                      icon: Icon(
+                        state.isSaved ? Icons.bookmark : Icons.bookmark_border,
+                      ),
+                      label: Text(
+                        state.isSaved ? l10n.savedButton : l10n.saveButton,
+                      ),
                     );
                   },
                 ),
@@ -226,7 +212,12 @@ class _PlaceDetailBody extends StatelessWidget {
                       'assets/icons/locations/ic_location_user.png',
                     ),
                     title: Text(comment.comment),
-                    subtitle: Text(comment.createdAt.toDisplayFormat(l10n.commentDateFormat, locale)),
+                    subtitle: Text(
+                      comment.createdAt.toDisplayFormat(
+                        l10n.commentDateFormat,
+                        locale,
+                      ),
+                    ),
                   );
                 },
               ),
@@ -252,11 +243,11 @@ class _PlaceDetailBody extends StatelessWidget {
                           onPressed: () {
                             if (commentController.text.isNotEmpty) {
                               context.read<PlaceDetailBloc>().add(
-                                    AddCommentIntent(
-                                      placeId,
-                                      commentController.text,
-                                    ),
-                                  );
+                                AddCommentIntent(
+                                  placeId,
+                                  commentController.text,
+                                ),
+                              );
                             }
                           },
                           icon: const Icon(Icons.send),
@@ -297,10 +288,9 @@ class _MapPickerSheet extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Theme.of(context)
-                    .colorScheme
-                    .onSurface
-                    .withValues(alpha: 0.3),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

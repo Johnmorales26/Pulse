@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pulse/core/navigation/router_names.dart';
+import 'package:pulse/core/presentation/utils/app_toast.dart';
 import 'package:pulse/features/auth/presentation/auth_bloc.dart';
 import 'package:pulse/features/auth/presentation/auth_error_l10n.dart';
 import 'package:pulse/features/auth/presentation/auth_intent.dart';
@@ -25,12 +26,7 @@ class LoginScreen extends StatelessWidget {
           context.goNamed('map');
         } else if (state is AuthError) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(localizeAuthError(state.message, l10n)),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          AppToast.error(context, localizeAuthError(state.message, l10n));
         }
       },
       builder: (context, state) {

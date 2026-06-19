@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pulse/core/presentation/utils/app_toast.dart';
 import 'package:pulse/features/auth/presentation/auth_bloc.dart';
 import 'package:pulse/features/auth/presentation/auth_error_l10n.dart';
 import 'package:pulse/features/auth/presentation/auth_intent.dart';
@@ -26,12 +27,7 @@ class SignUpScreen extends StatelessWidget {
           context.goNamed('map');
         } else if (state is AuthError) {
           final l10n = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(localizeAuthError(state.message, l10n)),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          AppToast.error(context, localizeAuthError(state.message, l10n));
         }
       },
       builder: (context, state) {
@@ -51,7 +47,8 @@ class SignUpScreen extends StatelessWidget {
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height -
+                  minHeight:
+                      MediaQuery.of(context).size.height -
                       MediaQuery.of(context).viewInsets.bottom -
                       kToolbarHeight -
                       MediaQuery.of(context).padding.vertical,
@@ -68,7 +65,9 @@ class SignUpScreen extends StatelessWidget {
                             children: [
                               Text(
                                 l10n.signUpTitle,
-                                style: Theme.of(context).textTheme.headlineLarge,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineLarge,
                               ),
                               const SizedBox(height: 16.0),
                               DarkTextField(
@@ -95,8 +94,9 @@ class SignUpScreen extends StatelessWidget {
                                     prefixIcon: const Icon(Icons.password),
                                     obscureText: obscured,
                                     suffixIcon: IconButton(
-                                      onPressed: () => isPasswordObscured.value =
-                                          !isPasswordObscured.value,
+                                      onPressed: () =>
+                                          isPasswordObscured.value =
+                                              !isPasswordObscured.value,
                                       icon: Icon(
                                         obscured
                                             ? Icons.visibility_off
@@ -117,8 +117,9 @@ class SignUpScreen extends StatelessWidget {
                                     prefixIcon: const Icon(Icons.password),
                                     obscureText: obscured,
                                     suffixIcon: IconButton(
-                                      onPressed: () => isPasswordObscured.value =
-                                          !isPasswordObscured.value,
+                                      onPressed: () =>
+                                          isPasswordObscured.value =
+                                              !isPasswordObscured.value,
                                       icon: Icon(
                                         obscured
                                             ? Icons.visibility_off
@@ -138,10 +139,12 @@ class SignUpScreen extends StatelessWidget {
                                           context.read<AuthBloc>().add(
                                             SignUpIntent(
                                               username: usernameController.text,
-                                              email: emailController.text.trim(),
+                                              email: emailController.text
+                                                  .trim(),
                                               password: passwordController.text,
                                               confirmPassword:
-                                                  confirmPasswordController.text,
+                                                  confirmPasswordController
+                                                      .text,
                                             ),
                                           );
                                         },
@@ -183,7 +186,9 @@ class SignUpScreen extends StatelessWidget {
                                 TextSpan(
                                   text: l10n.signInLink,
                                   style: TextStyle(
-                                    color: Theme.of(context).colorScheme.primary,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primary,
                                     fontWeight: FontWeight.w600,
                                   ),
                                   recognizer: TapGestureRecognizer()

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pulse/core/di/injection.dart';
 import 'package:pulse/core/navigation/router_names.dart';
+import 'package:pulse/core/presentation/utils/app_toast.dart';
 import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/features/map/domain/model/place_icon.dart';
 import 'package:pulse/features/profile/domain/model/user_profile.dart';
@@ -90,12 +91,7 @@ class ProfileScreen extends StatelessWidget {
         if (state is ProfileSignOutSuccess) {
           context.go('/');
         } else if (state is ProfileError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+          AppToast.error(context, state.message);
         }
       },
       child: Scaffold(

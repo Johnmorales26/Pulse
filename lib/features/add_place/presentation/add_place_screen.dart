@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pulse/core/presentation/utils/app_toast.dart';
 import 'package:pulse/core/presentation/widgets/blurred_bottom_sheet.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_bloc.dart';
 import 'package:pulse/features/add_place/presentation/bloc/add_place_intent.dart';
@@ -54,31 +55,17 @@ class _AddPlaceScreenState extends State<AddPlaceScreen> {
           final l10n = AppLocalizations.of(context)!;
 
           if (state.status == AddPlaceStatus.unauthenticated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? l10n.signInRequired),
-                backgroundColor: Colors.orange,
-              ),
-            );
+            AppToast.info(context, state.errorMessage ?? l10n.signInRequired);
             return;
           }
           if (state.status == AddPlaceStatus.validationError ||
               state.status == AddPlaceStatus.failure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.errorMessage ?? l10n.unknownError),
-                backgroundColor: Colors.redAccent,
-              ),
-            );
+            AppToast.error(context, state.errorMessage ?? l10n.unknownError);
+            context.pop(false);
           }
           if (state.status == AddPlaceStatus.success) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.placeSavedSuccess),
-                backgroundColor: Colors.green,
-              ),
-            );
-            context.pop();
+            AppToast.success(context, l10n.placeSavedSuccess);
+            context.pop(true);
           }
         },
         buildWhen: (prev, curr) =>
